@@ -332,10 +332,10 @@ header {
 .sticky .logo-black { display: block; }
 
 /* ----------------------------------------------- */
-/* FEATURES */
+/* ABOUT */
 /* ----------------------------------------------- */
 
-.section-features .long-copy {
+.section-about .long-copy {
     margin-bottom: 30px;
 }
 
@@ -387,7 +387,7 @@ header {
 
 
 /* ----------------------------------------------- */
-/* HOW IT WORKS SECTION */
+/* SIGN UP / SERVICES SECTION */
 /* ----------------------------------------------- */
 
 .section-steps {
@@ -414,15 +414,15 @@ header {
     width: 40%;
 }
 
-.works-step {
+.services-step {
     margin-bottom: 50px;
 }
 
-.works-step:last-of-type {
+.services-step:last-of-type {
     margin-bottom: 80px;
 }
 
-.works-step div {
+.services-step div {
     color: #717d8e;
     font-size: 150%;
     height: 54px;
@@ -449,7 +449,7 @@ header {
 
 
 /* ----------------------------------------------- */
-/* CITIES */
+/* SCHEDULE */
 /* ----------------------------------------------- */
 
 .box img {
@@ -512,7 +512,7 @@ cite img {
 /* SIGN UP */
 /* ----------------------------------------------- */
 
-.section-plans {
+.section-signup {
     background-color: #f4f4f4;
 }
 
