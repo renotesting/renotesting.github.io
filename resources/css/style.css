@@ -453,8 +453,8 @@ header {
 /* ----------------------------------------------- */
 
 .box img {
-    width: 120%;
-    height: auto;
+    width: 430px;
+    height: 370px;
     margin-bottom: 20px;
     padding-right: 20%;
 }
