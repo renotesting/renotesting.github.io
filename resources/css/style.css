@@ -55,8 +55,6 @@ section {
    
 }
 
-
-
 /* ----- HEADINGS ----- */
 h1,
 h2,
@@ -716,5 +714,7 @@ footer p {
 .js--wp-3.animated {
     opacity: 1;
 }
+
+
 
 
