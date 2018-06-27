@@ -1,0 +1,24 @@
+{
+  "name": "jquery.liquidCarousel.js",
+  "description": "jQuery carousel plugin.",
+  "version": "1.6",
+  "require": "jquery.js",
+  "lastUpdateComment": "fadeのロジックを自然な表示に変更。fadeDelayを削除",
+  "link": "http://rin316.github.io/jquery.liquidCarousel/",
+  "author": "rin316 (Yuta Hayashi) [http://5am.jp]",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:rin316/jquery.liquidCarousel.js.git"
+  },
+  "license": "MIT",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-growl": "~0.1.5",
+    "grunt-shell": "~0.4.0",
+    "grunt-contrib-watch": "~0.5.3"
+  }
+}
