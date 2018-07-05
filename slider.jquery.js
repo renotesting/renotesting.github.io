@@ -2,7 +2,7 @@
 
 	$.fn.MWslider = function(config){
 		
-			this.elements = this.find("img");
+			this.elements = this.find("figure");
 			this.center = this.elements.filter(".center").index();
 
 		var that= this,
@@ -26,8 +26,7 @@
 
 
 
-	// Ustawia responsywną wysokość slider'a
-
+	
 	$.fn.MWslider.setHeight = function(that){
 
 		var width=that.width(),
@@ -46,7 +45,7 @@
 	}
 
 
-	// Dodawanie nawigacji
+	
 
 	$.fn.MWslider.addNav = function(that,f1,settings){
 		var leftArrow=$("<div class='navContainer'><div class='"+settings.nav.leftClass+"'></div>").prependTo(that),
@@ -56,7 +55,7 @@
 	}
 
 
-	// Ustawianie configu
+	
 
 	$.fn.MWslider.getConfig = function(config){
 
@@ -78,7 +77,7 @@
 		}
 	}
 
-	// Przesówanie slidera
+	
 
 	$.fn.MWslider.checkPosition = function(cent,len){
 			var left=(cent-1)<0 ? len-1 : cent-1,
