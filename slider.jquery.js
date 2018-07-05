@@ -77,7 +77,6 @@
 		}
 	}
 
-	
 
 	$.fn.MWslider.checkPosition = function(cent,len){
 			var left=(cent-1)<0 ? len-1 : cent-1,
@@ -106,6 +105,8 @@
 		that.elements.eq(pos[0]).addClass("left");
 
 	}
+    
+
 
 
 

@@ -65,6 +65,16 @@ $(document).ready(function() {
         offset: '50%'
     });
     
+    //carousel on scroll
+    //not working yet 
+    $("myButton").ready(function() {
+    setTimeout(function() {
+        $("myButton").trigger('click');
+    },20);
+    }, {
+        offset: '50%'
+    });
+    
     
     /* Mobile navigation */
     $('.js--nav-icon').click(function() {
