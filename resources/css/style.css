@@ -94,6 +94,13 @@ h2:after {
     margin: 0 auto;
     margin-top: 30px;
 }
+h4{
+    font-size: 180%;
+    word-spacing: 2px;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
 
 
 /* ----- PARAGRAPHS ----- */
@@ -218,6 +225,7 @@ header {
     width: 1140px;
     top: 50%;
     left: 50%;
+    color: #bebebe;
     -webkit-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);

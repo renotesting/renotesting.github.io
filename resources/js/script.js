@@ -65,14 +65,12 @@ $(document).ready(function() {
         offset: '50%'
     });
     
+    
     //carousel on scroll
-    //not working yet 
-    $("myButton").ready(function() {
-    setTimeout(function() {
-        $("myButton").trigger('click');
-    },20);
+    $('.js--wp-5').waypoint(function(direction) {
+        $('.js--wp-5').addClass('animated fadeInLeftBig');
     }, {
-        offset: '50%'
+        offset: '90%'
     });
     
     
