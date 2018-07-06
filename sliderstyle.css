@@ -12,7 +12,8 @@
 .textbox{
     margin-right: 70%;
     box-shadow: 0 29.5px 38px #c7c7c7;
-    transform:translate(-130%,-400%);
+    transform:translate(-150%,-400%);
+    max-width: 100%;
     padding: 15px;
     
     
@@ -48,7 +49,7 @@ figcaption{
 }
 .slider>figure.center{
 	z-index: 2;
-	transform:translate(-50%,-50%) scale(1.1);
+	transform:translate(-50%,-50%) scale(1.17);
 }
 .slider>figure.right{
 	transform: translate(40%,-50%);
