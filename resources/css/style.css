@@ -55,6 +55,13 @@ section {
    
 }
 
+.BlogPictures {
+    padding: 80px 0;
+    line-height: 145%;
+    width: 70%;
+    margin-left: 17%;
+}
+
 /* ----- HEADINGS ----- */
 h1,
 h2,
@@ -423,7 +430,9 @@ header {
 }
 
 .app-screen {
-    width: 40%;
+    width: 100%;
+    transform: translateX(50%)
+
 }
 
 .services-step {
@@ -489,8 +498,8 @@ header {
 /* ----------------------------------------------- */
 
 .section-testimonials {
-    background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(img/back-customers-min.jpg);
-    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(img/back-customers-min.jpg);
+    background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(img/hero-mini.jpeg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(img/hero-mini.jpeg);
     background-size: cover;
     color: #fff;
     background-attachment: fixed;
