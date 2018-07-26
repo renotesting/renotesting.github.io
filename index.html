@@ -134,44 +134,44 @@
             <ul class="photos-showcase clearfix">
                 <li>
                     <figure class="indiv-photo">
-                        <img src="resources/img/GroupTraining00.jpg" alt="Korean bibimbap with egg and vegetables">
+                        <img src="resources/img/GroupTraining00.jpg">
                     </figure>
                 </li>
                 <li>
                     <figure class="indiv-photo">
-                        <img src="resources/img/GroupTraining01.JPG" alt="Simple italian pizza with cherry tomatoes">
+                        <img src="resources/img/GroupTraining01.JPG">
                     </figure>
                 </li>
                 <li>
                     <figure class="indiv-photo">
-                        <img src="resources/img/GroupTraining03.JPG" alt="Chicken breast steak with vegetables">
+                        <img src="resources/img/GroupTraining03.JPG">
                     </figure>
                 </li>
                 <li>
                     <figure class="indiv-photo">
-                        <img src="resources/img/GroupTraining04.jpg" alt="Autumn pumpkin soup">
+                        <img src="resources/img/GroupTraining04.jpg">
                     </figure>
                 </li>
             </ul>
             <ul class="photos-showcase clearfix">
                 <li>
                     <figure class="indiv-photo">
-                        <img src="resources/img/GroupTraining05.jpg" alt="Paleo beef steak with vegetables">
+                        <img src="resources/img/GroupTraining05.jpg">
                     </figure>
                 </li>
                 <li>
                     <figure class="indiv-photo">
-                        <img src="resources/img/WeightTraining_chest.jpg" alt="Healthy baguette with egg and vegetables">
+                        <img src="resources/img/WeightTraining_chest.jpg">
                     </figure>
                 </li>
                 <li>
                     <figure class="indiv-photo">
-                        <img src="resources/img/WeightTraining_deadlift.jpg" alt="Burger with cheddar and bacon">
+                        <img src="resources/img/WeightTraining_deadlift.jpg">
                     </figure>
                 </li>
                 <li>
                     <figure class="indiv-photo">
-                        <img src="resources/img/GroupTraining08.jpg" alt="Granola with cherries and strawberries">
+                        <img src="resources/img/GroupTraining08.jpg">
                     </figure>
                 </li>
             </ul>
@@ -193,7 +193,7 @@
             </div>
             <div class="row">
                 <div class="col span-1-of-2 steps-box">
-                    <img src="resources/img/app-iPhone.png" alt="Omnifood app on iPhone" class="app-screen js--wp-2">
+                    <img src="resources/img/app-iPhone.png" width="1000" height="500" class="app-screen js--wp-2">
                 </div>
                 <div class="col span-1-of-2 steps-box">
                     <div class="services-step clearfix">
@@ -335,7 +335,7 @@
                 
     </div>
  
-        
+
 
     
         <section class="section-testimonials">
@@ -603,47 +603,6 @@
     
     
     </body>  
-    
-    <script type="text/javascript">
-        /*
-         * jQuery throttle / debounce - v1.1 - 3/7/2010
-         * http://benalman.com/projects/jquery-throttle-debounce-plugin/
-         * 
-         * Copyright (c) 2010 "Cowboy" Ben Alman
-         * Dual licensed under the MIT and GPL licenses.
-         * http://benalman.com/about/license/
-         */
-        (function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
-
-
-        // Default carousel
-        //var carousel = $('div.carousel-default').floatingCarousel({ autoScroll : true, touchOverflowHidden : false });
-        var carouselDefault = new floatingCarousel('#carousel-default');
-
-        // Autoscroll
-        var carouselAutoscroll = new floatingCarousel('#carousel-autoscroll', {
-                                    autoScroll : true,
-                                    autoScrollDirection : 'right',
-                                    autoScrollSpeed : 20000,
-                                    scrollSpeed : 'fast'
-                                });         
-
-        // vertical
-        var carouselVertical = new floatingCarousel('#carousel-vertical', {
-                                    scrollerAlignment : 'vertical'
-                                });
-
-        //responsive
-        var opts = {
-                autoScroll : true,
-                autoScrollSpeed : 20000
-            }
-        var responsiveCarousel = $('#carousel-responsive').floatingCarousel(opts);
-        $(window).resize($.debounce(100, function () {
-            responsiveCarousel.update(opts);
-        })); 
-    </script>
-    
     
     
 </html>
