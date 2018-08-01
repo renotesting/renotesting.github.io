@@ -108,6 +108,23 @@ h4{
     margin-bottom: 30px;
     letter-spacing: 1px;
 }
+h5 {
+    font-weight: 300;
+    color: #fff;
+    padding: 0px 2px 2px 2px;
+    background-color: #717d8e;
+    text-transform: uppercase;
+    font-size: 120%;
+    word-spacing: 2px;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+h6{
+    line-height: 145%;
+    width: 70%;
+    margin-left: 10%;
+}
 
 
 /* ----- PARAGRAPHS ----- */
@@ -115,6 +132,24 @@ h4{
     line-height: 145%;
     width: 70%;
     margin-left: 17%;
+}
+
+.blogContent{
+    line-height: 165%;
+    width: 100%;
+    margin-left: 2%;
+    margin-bottom: 3%;
+}
+.blogTitle {
+    background-color: #717d8e;
+    color: #fff;
+    padding-top: 30px;
+}
+.blogPostCentred{
+    line-height: 165%;
+    width: 100%;
+    margin-bottom: 3%;
+    text-align: center;
 }
 
 .box p {
