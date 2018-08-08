@@ -199,6 +199,12 @@ a:active {
 }
 
 /* ----- BUTTONS ----- */
+
+.w3-button {
+    background-color: transparent;
+}
+
+
 .btn:link,
 .btn:visited,
 input[type=submit] {
