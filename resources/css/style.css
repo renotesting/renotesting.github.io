@@ -271,7 +271,7 @@ header {
 .hero-text-box {
     position: absolute;
     width: 1140px;
-    top: 50%;
+    top: 65%;
     left: 50%;
     color: #bebebe;
     -webkit-transform: translate(-50%, -50%);
@@ -289,7 +289,7 @@ header {
   border-right: .15em solid grey; /* The typwriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
   margin: 0 auto; /* Gives that scrolling effect as the typing happens */
-    margin-bottom: 30px;
+    margin-bottom: 35px;
   letter-spacing: .15em; /* Adjust as needed */
   animation: 
     typing 3.5s steps(30, end),
