@@ -26,6 +26,10 @@ $(document).ready(function() {
        $('html, body').animate({scrollTop: $('.js--section-blog1').offset().top}, 1000); 
     });
     
+    $('.js--scroll-to-blog2').click(function () {
+       $('html, body').animate({scrollTop: $('.js--section-blog2').offset().top}, 1000); 
+    });
+    
     
     
     /* Navigation scroll */
