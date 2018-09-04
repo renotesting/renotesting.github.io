@@ -139,11 +139,26 @@ h6{
     width: 100%;
     margin-left: 2%;
     margin-bottom: 3%;
+    font-size: 100%;
 }
 .blogTitle {
     background-color: #717d8e;
     color: #fff;
     padding-top: 30px;
+    padding-bottom: 30px;
+    font-size: 200%;
+    word-spacing: 2px;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+.blogSubTitle {
+    background-color: #717d8e;
+    color: #fff;
+    padding-top: 0px;
+    padding-left: 1%;
+    font-size: 150%;
+    text-align: left
 }
 .blogPostCentred{
     line-height: 165%;
