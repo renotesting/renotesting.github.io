@@ -6,6 +6,15 @@
     }
     
     .row { padding: 0 2%; }
+    
+    .hero-text-box h1 {
+    font-size: 100px;
+    }
+    
+    .indiv-photo {
+    width: 100%;
+    height: 210px;
+    }
 }
 
 
@@ -13,6 +22,10 @@
 @media only screen and (max-width: 1023px) {
     body { font-size: 18px; }
     section { padding: 60px 0; }
+    
+    .hero-text-box h1 {
+    font-size: 85px;
+    }
     
     .long-copy {
         width: 80%;
@@ -23,6 +36,10 @@
     .steps-box:last-child { margin-top: 10px; }
     .works-steps { margin-bottom: 40px; }
     .works-step:last-of-type { margin-bottom: 60px; }
+    
+    .indiv-photo {
+    height: 199px;
+    }
     
     .app-screen { width: 50%; }
     
@@ -85,7 +102,9 @@
     .sticky .mobile-nav-icon { margin-top: 10px; }
     .sticky .mobile-nav-icon i { color: #555; }
     
-    
+    .hero-text-box h1 {
+    font-size: 60px;
+    }
     
     h1 { font-size: 180%; }
     h2 { font-size: 150%; }
@@ -93,6 +112,10 @@
     .long-copy {
         width: 100%;
         margin-left: 0%;
+    }
+    
+    .indiv-photo {
+    height: 150px;
     }
     
     .app-screen { width: 40%; }
@@ -117,5 +140,13 @@
 @media only screen and (max-width: 480px) {
     section { padding: 25px 0; }
     .contact-form {width: 100%; }
+    
+.hero-text-box h1 {
+    font-size: 40px;
+}
+    
+    .indiv-photo {
+    height: 100px;
+    }
 }
 
