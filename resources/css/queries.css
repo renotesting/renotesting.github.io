@@ -8,7 +8,7 @@
     .row { padding: 0 2%; }
     
     .hero-text-box h1 {
-    font-size: 100px;
+        font-size: 90px;
     }
     
     .indiv-photo {
@@ -24,7 +24,7 @@
     section { padding: 60px 0; }
     
     .hero-text-box h1 {
-    font-size: 85px;
+        font-size: 65px;
     }
     
     .long-copy {
@@ -38,7 +38,7 @@
     .works-step:last-of-type { margin-bottom: 60px; }
     
     .indiv-photo {
-    height: 199px;
+        height: 199px;
     }
     
     .app-screen { width: 50%; }
@@ -103,7 +103,7 @@
     .sticky .mobile-nav-icon i { color: #555; }
     
     .hero-text-box h1 {
-    font-size: 60px;
+        font-size: 40px;
     }
     
     h1 { font-size: 180%; }
@@ -141,9 +141,9 @@
     section { padding: 25px 0; }
     .contact-form {width: 100%; }
     
-.hero-text-box h1 {
-    font-size: 40px;
-}
+    .hero-text-box h1 {
+        font-size: 30px;
+    }
     
     .indiv-photo {
     height: 100px;
