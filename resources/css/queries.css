@@ -158,5 +158,9 @@
         width: 200px;
         height: 210px;
     }
+    
+    .client {
+        height:130px;
+    }
 }
 
