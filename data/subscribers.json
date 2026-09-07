@@ -1,0 +1,37 @@
+[
+  {
+    "id": "9876543210",
+    "name": "Sarah Newsletter",
+    "email": "sarah@example.com",
+    "subscriptionDate": "2024-01-10T08:30:00Z",
+    "status": "active"
+  },
+  {
+    "id": "9876543211",
+    "name": "Mike Fitness",
+    "email": "mike@example.com",
+    "subscriptionDate": "2024-01-12T15:45:00Z",
+    "status": "active"
+  },
+  {
+    "id": "9876543212",
+    "name": "Lisa Health",
+    "email": "lisa@example.com",
+    "subscriptionDate": "2024-01-14T10:20:00Z",
+    "status": "active"
+  },
+  {
+    "id": "9876543213",
+    "name": "David Training",
+    "email": "david@example.com",
+    "subscriptionDate": "2024-01-16T12:00:00Z",
+    "status": "active"
+  },
+  {
+    "id": "9876543214",
+    "name": "Emma Kickbox",
+    "email": "emma@example.com",
+    "subscriptionDate": "2024-01-19T14:30:00Z",
+    "status": "active"
+  }
+]

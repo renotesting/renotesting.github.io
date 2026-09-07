@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1234567890",
+    "name": "Demo User",
+    "email": "demo@example.com",
+    "password": "$2a$10$example.hashed.password.here",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "lastLogin": "2024-01-20T14:20:00Z"
+  },
+  {
+    "id": "1234567891",
+    "name": "Jane Fitness",
+    "email": "jane@example.com",
+    "password": "$2a$10$example.hashed.password.here",
+    "createdAt": "2024-01-18T11:45:00Z",
+    "lastLogin": "2024-01-21T09:15:00Z"
+  },
+  {
+    "id": "1234567892",
+    "name": "John Trainer",
+    "email": "john@example.com",
+    "password": "$2a$10$example.hashed.password.here",
+    "createdAt": "2024-01-20T13:00:00Z",
+    "lastLogin": null
+  }
+]

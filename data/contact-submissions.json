@@ -1,0 +1,52 @@
+[
+  {
+    "id": "5555555550",
+    "name": "Alex Thompson",
+    "email": "alex.thompson@example.com",
+    "phone": "403-555-0001",
+    "subject": "Question about kickboxing classes",
+    "message": "Hi, I'm interested in learning more about your kickboxing classes. Are there beginner-friendly options available? I've never done martial arts before.",
+    "submittedAt": "2024-01-15T10:30:00Z",
+    "status": "new"
+  },
+  {
+    "id": "5555555551",
+    "name": "Rebecca Martinez",
+    "email": "rebecca.m@example.com",
+    "phone": "403-555-0002",
+    "subject": "Personal training inquiry",
+    "message": "I'm looking for a personal trainer to help me with weight loss and strength building. Can you provide information about your personal training packages and pricing?",
+    "submittedAt": "2024-01-16T13:45:00Z",
+    "status": "new"
+  },
+  {
+    "id": "5555555552",
+    "name": "James Wilson",
+    "email": "james.w@example.com",
+    "phone": "403-555-0003",
+    "subject": "Group training for corporate team",
+    "message": "We're a group of 10 employees looking for group fitness training. Would RenoFitness offer corporate team building fitness classes?",
+    "submittedAt": "2024-01-17T09:20:00Z",
+    "status": "new"
+  },
+  {
+    "id": "5555555553",
+    "name": "Sophie Chen",
+    "email": "sophie.chen@example.com",
+    "phone": "403-555-0004",
+    "subject": "Muay Thai class schedule",
+    "message": "Could you send me the schedule for your Muay Thai classes? I'm particularly interested in evening classes after work.",
+    "submittedAt": "2024-01-18T16:00:00Z",
+    "status": "new"
+  },
+  {
+    "id": "5555555554",
+    "name": "Michael Anderson",
+    "email": "michael.a@example.com",
+    "phone": "Not provided",
+    "subject": "Membership renewal question",
+    "message": "My membership is expiring next month. What are the renewal options and do you offer any loyalty discounts for long-term members?",
+    "submittedAt": "2024-01-19T11:15:00Z",
+    "status": "new"
+  }
+]
