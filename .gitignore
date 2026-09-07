@@ -70,3 +70,8 @@ coverage/
 *.backup
 *.old
 *~
+
+# ========================
+# security credentials
+# ========================
+*.pem
