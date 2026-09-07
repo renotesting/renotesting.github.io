@@ -94,16 +94,28 @@ app.use((err, req, res, next) => {
   });
 });
 
+// =========================================
+// Enable Self-Signed Certificate for local
+// =========================================
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
 // ============================================================================
 // START SERVER
 // ============================================================================
-app.listen(PORT, () => {
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`🔒 HTTPS Server running on: https://localhost:${PORT}`);
   console.log(`
 ╔════════════════════════════════════════════════════════════════╗
 ║          🏋️  RenoFitness Server Started Successfully           ║
 ╚════════════════════════════════════════════════════════════════╝
 
-📍 Server running on: http://localhost:${PORT}
+📍 Server running on: https://localhost:${PORT}
 🌍 Environment: ${process.env.NODE_ENV || 'development'}
 📧 Email Service: ${process.env.EMAIL_USER || 'Not configured'}
 
