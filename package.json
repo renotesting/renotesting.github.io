@@ -19,18 +19,18 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.0.3",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.1.2",
-    "nodemailer": "^6.9.7",
+    "jsonwebtoken": "^8.5.1",
+    "nodemailer": "^6.9.1",
     "cors": "^2.8.5",
     "body-parser": "^1.20.2",
-    "helmet": "^7.1.0"
+    "helmet": "^7.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.1"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=14.0.0"
   }
 }
