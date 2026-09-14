@@ -7,38 +7,29 @@ const express = require('express');
 const router = express.Router();
 
 const { sendWelcomeEmail, sendNewsletter } = require('../utils/emailService');
-const { appendToFile, findInFile, filterFile } = require('../utils/storage');
-const { verifyToken } = require('../utils/tokenService');
+const { appendToFile, findInFile, filterFile, deleteFromFile } = require('../utils/storage');
+const { verifyAuth } = require('../middleware/auth');
 
 const SUBSCRIBERS_FILE = 'subscribers.json';
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * POST /api/email/subscribe
- * Subscribe a user to the newsletter
- * Body: { name, email }
- */
 router.post('/subscribe', async (req, res) => {
   try {
     const { name, email } = req.body;
 
-    // Validation
     if (!name || !email) {
-      return res.status(400).json({ error: 'Name and email are required' });
+      return res.status(400).json({ success: false, message: 'Name and email are required' });
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Invalid email format' });
+    if (!EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ success: false, message: 'Invalid email format' });
     }
 
-    // Check if already subscribed
     const existingSubscriber = findInFile(SUBSCRIBERS_FILE, (s) => s.email === email);
     if (existingSubscriber) {
-      return res.status(409).json({ error: 'Email already subscribed' });
+      return res.status(409).json({ success: false, message: 'Email already subscribed' });
     }
 
-    // Create subscriber object
     const newSubscriber = {
       id: Date.now().toString(),
       name,
@@ -47,16 +38,12 @@ router.post('/subscribe', async (req, res) => {
       status: 'active'
     };
 
-    // Save subscriber
     const saved = appendToFile(SUBSCRIBERS_FILE, newSubscriber);
     if (!saved) {
-      return res.status(500).json({ error: 'Failed to subscribe' });
+      return res.status(500).json({ success: false, message: 'Failed to subscribe' });
     }
 
-    // Send welcome email
-    const emailResult = await sendWelcomeEmail(email, name, 'subscriber');
-
-    console.log(`✅ New subscriber: ${email}`);
+    await sendWelcomeEmail(email, name, 'subscriber');
 
     res.status(201).json({
       success: true,
@@ -69,38 +56,28 @@ router.post('/subscribe', async (req, res) => {
     });
   } catch (error) {
     console.error('Subscription error:', error.message);
-    res.status(500).json({ error: 'Subscription failed', details: error.message });
+    res.status(500).json({ success: false, message: 'Subscription failed' });
   }
 });
 
-/**
- * POST /api/email/unsubscribe
- * Unsubscribe from newsletter
- * Body: { email }
- */
 router.post('/unsubscribe', (req, res) => {
   try {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+      return res.status(400).json({ success: false, message: 'Email is required' });
     }
 
-    // Find and update subscriber status
     const subscriber = findInFile(SUBSCRIBERS_FILE, (s) => s.email === email);
     if (!subscriber) {
-      return res.status(404).json({ error: 'Subscriber not found' });
+      return res.status(404).json({ success: false, message: 'Subscriber not found' });
     }
 
-    // Delete subscriber
-    const { deleteFromFile } = require('../utils/storage');
     const deleted = deleteFromFile(SUBSCRIBERS_FILE, (s) => s.email === email);
 
     if (!deleted) {
-      return res.status(500).json({ error: 'Failed to unsubscribe' });
+      return res.status(500).json({ success: false, message: 'Failed to unsubscribe' });
     }
-
-    console.log(`✅ Unsubscribed: ${email}`);
 
     res.status(200).json({
       success: true,
@@ -108,25 +85,12 @@ router.post('/unsubscribe', (req, res) => {
     });
   } catch (error) {
     console.error('Unsubscribe error:', error.message);
-    res.status(500).json({ error: 'Unsubscribe failed' });
+    res.status(500).json({ success: false, message: 'Unsubscribe failed' });
   }
 });
 
-/**
- * GET /api/email/subscribers
- * Get all subscribers (admin only)
- * Requires valid JWT token
- */
-router.get('/subscribers', (req, res) => {
+router.get('/subscribers', verifyAuth, (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const token = authHeader.split(' ')[1];
-    verifyToken(token); // Will throw if invalid
-
     const subscribers = filterFile(SUBSCRIBERS_FILE, (s) => s.status === 'active');
 
     res.status(200).json({
@@ -135,44 +99,27 @@ router.get('/subscribers', (req, res) => {
       subscribers
     });
   } catch (error) {
-    res.status(401).json({ error: 'Unauthorized', details: error.message });
+    console.error('List subscribers error:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to list subscribers' });
   }
 });
 
-/**
- * POST /api/email/send-newsletter
- * Send newsletter to all subscribers (admin only)
- * Requires valid JWT token
- * Body: { subject, html }
- */
-router.post('/send-newsletter', async (req, res) => {
+router.post('/send-newsletter', verifyAuth, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const token = authHeader.split(' ')[1];
-    verifyToken(token); // Will throw if invalid
-
     const { subject, html } = req.body;
 
     if (!subject || !html) {
-      return res.status(400).json({ error: 'Subject and HTML content are required' });
+      return res.status(400).json({ success: false, message: 'Subject and HTML content are required' });
     }
 
-    // Get all active subscribers
     const subscribers = filterFile(SUBSCRIBERS_FILE, (s) => s.status === 'active');
     const emails = subscribers.map((s) => s.email);
 
     if (emails.length === 0) {
-      return res.status(400).json({ error: 'No active subscribers' });
+      return res.status(400).json({ success: false, message: 'No active subscribers' });
     }
 
-    // Send newsletter
     const results = await sendNewsletter(emails, subject, html);
-
-    console.log(`📧 Newsletter sent: ${results.sent} success, ${results.failed} failed`);
 
     res.status(200).json({
       success: true,
@@ -181,7 +128,7 @@ router.post('/send-newsletter', async (req, res) => {
     });
   } catch (error) {
     console.error('Newsletter error:', error.message);
-    res.status(500).json({ error: 'Failed to send newsletter', details: error.message });
+    res.status(500).json({ success: false, message: 'Failed to send newsletter' });
   }
 });
 

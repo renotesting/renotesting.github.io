@@ -1,0 +1,32 @@
+---
+import photo1 from '../assets/1.jpg';
+import photo2 from '../assets/2.JPG';
+import photo3 from '../assets/3.JPG';
+import photo4 from '../assets/4.jpg';
+import photo5 from '../assets/5.jpg';
+import photo6 from '../assets/6.jpg';
+import photo7 from '../assets/7.jpg';
+import photo8 from '../assets/8.jpg';
+
+const photos = [
+  { src: photo1, alt: 'Resistance training demo for young female hockey players' },
+  { src: photo2, alt: 'Kickboxing partner training for roundhouse kicks' },
+  { src: photo3, alt: 'Kickboxing trainees working on core conditioning' },
+  { src: photo4, alt: 'Youth kickboxing bag work, ages 6 to 17' },
+  { src: photo5, alt: 'Adult kickboxing group after training' },
+  { src: photo6, alt: 'Chest conditioning with cable fly' },
+  { src: photo7, alt: 'Back conditioning with barbell deadlift' },
+  { src: photo8, alt: 'Fitness kickboxing partner training' }
+];
+---
+
+<section class="section" id="photos" aria-labelledby="photos-heading">
+  <h2 id="photos-heading">Training photos</h2>
+  <div class="photo-grid">
+    {photos.map((photo) => (
+      <figure>
+        <img src={photo.src.src} alt={photo.alt} width="400" height="280" loading="lazy" />
+      </figure>
+    ))}
+  </div>
+</section>

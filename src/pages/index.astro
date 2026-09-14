@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Services from '../components/Services.astro';
+import ContactForm from '../components/ContactForm.jsx';
+---
+
+<BaseLayout
+  title="RenoFitness | Personal Training and Kickboxing in Calgary"
+  description="RenoFitness is a Calgary personal training and fitness kickboxing studio offering weight training, Muay Thai, and nutrition coaching."
+>
+  <Navbar slot="header" />
+  <Hero />
+  <About />
+  <PhotoGrid />
+  <Testimonials />
+  <Services />
+  <section class="section" id="contact">
+    <h2>We're happy to hear from you</h2>
+    <div class="auth-card" style="margin: 2rem auto 0;">
+      <ContactForm client:visible />
+    </div>
+  </section>
+  <Footer slot="footer" />
+</BaseLayout>

@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import LoginForm from '../components/LoginForm.jsx';
+---
+
+<BaseLayout
+  title="Log in | RenoFitness"
+  description="Log in to your RenoFitness account."
+>
+  <Navbar slot="header" />
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Welcome back</h1>
+      <p>Log in to your RenoFitness account.</p>
+      <LoginForm client:load />
+      <p>Need an account? <a href="/register">Register</a></p>
+    </div>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

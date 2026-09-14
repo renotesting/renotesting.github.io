@@ -5,6 +5,7 @@
  */
 
 const nodemailer = require('nodemailer');
+const { escapeHtml } = require('./sanitize');
 
 let transporter = null;
 
@@ -119,7 +120,7 @@ async function sendWelcomeEmail(email, name, type = 'user') {
             <h1>Welcome to RenoFitness! 🥊</h1>
           </div>
           <div class="content">
-            <p>Hi ${name},</p>
+            <p>Hi ${escapeHtml(name)},</p>
             <p>Thank you for joining the RenoFitness community! We're excited to have you on board.</p>
             
             ${type === 'subscriber' ? `
@@ -223,9 +224,9 @@ async function sendContactConfirmation(data) {
             <h1>Thank You for Contacting Us!</h1>
           </div>
           <div class="content">
-            <p>Hi ${name},</p>
+            <p>Hi ${escapeHtml(name)},</p>
             <p>We received your message and will get back to you as soon as possible.</p>
-            <p><strong>Your Message Topic:</strong> ${subject}</p>
+            <p><strong>Your Message Topic:</strong> ${escapeHtml(subject)}</p>
             <p>In the meantime, feel free to check out our website for more information about our services.</p>
             <p>Stay strong! 💪<br>
             <strong>RenoFitness Team</strong></p>

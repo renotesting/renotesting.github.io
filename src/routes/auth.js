@@ -7,44 +7,40 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 
-const { generateToken } = require('../utils/tokenService');
-const { appendToFile, findInFile, filterFile } = require('../utils/storage');
+const { generateToken, extractToken, verifyToken } = require('../utils/tokenService');
+const { appendToFile, findInFile } = require('../utils/storage');
 
 const USERS_FILE = 'users.json';
-const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || '10');
+const BCRYPT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS || '10', 10);
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * POST /api/auth/register
- * Register a new user
- * Body: { name, email, password, confirmPassword }
- */
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
 
-    // Validation
     if (!name || !email || !password || !confirmPassword) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ success: false, message: 'Invalid email format' });
     }
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ error: 'Passwords do not match' });
+      return res.status(400).json({ success: false, message: 'Passwords do not match' });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
     }
 
-    // Check if user already exists
     const existingUser = findInFile(USERS_FILE, (u) => u.email === email);
     if (existingUser) {
-      return res.status(409).json({ error: 'Email already registered' });
+      return res.status(409).json({ success: false, message: 'Email already registered' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
-    // Create user object
     const newUser = {
       id: Date.now().toString(),
       name,
@@ -54,20 +50,16 @@ router.post('/register', async (req, res) => {
       lastLogin: null
     };
 
-    // Save user to file
     const saved = appendToFile(USERS_FILE, newUser);
     if (!saved) {
-      return res.status(500).json({ error: 'Failed to register user' });
+      return res.status(500).json({ success: false, message: 'Failed to register user' });
     }
 
-    // Generate token
     const token = generateToken({
       id: newUser.id,
       email: newUser.email,
       name: newUser.name
     });
-
-    console.log(`✅ New user registered: ${email}`);
 
     res.status(201).json({
       success: true,
@@ -81,44 +73,33 @@ router.post('/register', async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error.message);
-    res.status(500).json({ error: 'Registration failed', details: error.message });
+    res.status(500).json({ success: false, message: 'Registration failed' });
   }
 });
 
-/**
- * POST /api/auth/login
- * Login a user
- * Body: { email, password }
- */
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validation
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
 
-    // Find user
     const user = findInFile(USERS_FILE, (u) => u.email === email);
     if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
-    // Verify password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
-    // Generate token
     const token = generateToken({
       id: user.id,
       email: user.email,
       name: user.name
     });
-
-    console.log(`✅ User logged in: ${email}`);
 
     res.status(200).json({
       success: true,
@@ -132,33 +113,32 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error.message);
-    res.status(500).json({ error: 'Login failed', details: error.message });
+    res.status(500).json({ success: false, message: 'Login failed' });
   }
 });
 
-/**
- * POST /api/auth/verify-token
- * Verify if a JWT token is valid
- * Headers: Authorization: Bearer <token>
- */
 router.post('/verify-token', (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: 'No token provided' });
+    const token = extractToken(req.headers.authorization);
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
-    const token = authHeader.split(' ')[1];
-    const { verifyToken } = require('../utils/tokenService');
     const decoded = verifyToken(token);
 
     res.status(200).json({
       success: true,
       message: 'Token is valid',
-      user: decoded
+      user: {
+        id: decoded.id,
+        email: decoded.email,
+        name: decoded.name,
+        iat: decoded.iat,
+        exp: decoded.exp
+      }
     });
   } catch (error) {
-    res.status(401).json({ error: 'Invalid or expired token' });
+    res.status(401).json({ success: false, message: 'Invalid or expired token' });
   }
 });
 

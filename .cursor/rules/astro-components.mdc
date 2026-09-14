@@ -1,0 +1,35 @@
+---
+description: Astro component and page conventions for the RenoFitness frontend redesign
+globs: src/pages/**/*.astro,src/components/**/*.astro,src/layouts/**/*.astro
+alwaysApply: false
+---
+
+# Astro Components & Pages — RenoFitness
+
+## File-based routing
+- Map existing pages directly onto Astro's file-based routing:
+  - `public/index.html` → `src/pages/index.astro`
+  - `public/blog.html` → `src/pages/blog.astro` (or `src/pages/blog/index.astro` if blog posts become individual pages/content collection entries later)
+  - `public/login.html` → `src/pages/login.astro`
+  - `public/register.html` → `src/pages/register.astro`
+  - `public/subscribe.html` → `src/pages/subscribe.astro`
+  - `public/contact.html` → `src/pages/contact.astro`
+- Shared page chrome (nav, footer, `<head>` meta tags) belongs in a single layout at `src/layouts/BaseLayout.astro`, imported by every page — don't duplicate `<head>`/nav markup per page.
+
+## Component structure
+- Prefer small, single-purpose `.astro` components over large monolithic pages: e.g. `Navbar.astro`, `Footer.astro`, `ContactForm.astro`, `NewsletterForm.astro`, `LoginForm.astro`, `RegisterForm.astro`.
+- Static, non-interactive sections (hero banner, class schedule, studio info, testimonials) stay as plain `.astro` components with zero client-side JS — Astro ships no JS for these by default, which is the whole point of using it here.
+- Only the actual interactive pieces (forms that call the Express API, nav toggle on mobile) become islands — see `astro-islands-js.mdc` for how those are structured.
+
+## Migrating existing assets
+- Carry over existing visual assets from `carousel1/`, `carousel2/`, `widgets/`, `vendors/`, `resources/` into `src/assets/` or `public/` as appropriate (large third-party vendor scripts/styles that don't need bundling can stay in Astro's `public/`; anything you want Astro to optimize/bundle goes in `src/assets/`).
+- Don't blindly port jQuery-driven carousel/widget code as-is — first check whether the same visual effect can be done with a lighter, framework-native approach (CSS-only carousel, or a small islands-based component) before re-introducing a jQuery dependency into a fresh Astro project.
+
+## SEO and metadata
+- Every page sets its own `<title>` and meta description via props passed into `BaseLayout.astro` — don't hardcode a single site-wide title across all pages, since this is a local business site where per-page SEO (e.g. "Kickboxing Classes Calgary" on a classes page) matters.
+- Use semantic HTML (`<nav>`, `<main>`, `<footer>`, proper heading hierarchy) in every layout and page — carry this over deliberately from the old static site rather than assuming the old markup was already semantic.
+- Preserve or improve on any existing Open Graph / social preview tags from the original `index.html` when migrating into `BaseLayout.astro`.
+
+## Data flow to the Express backend
+- Astro pages/components never talk to `data/*.json` directly — all data operations (login, register, contact, newsletter) go through the existing Express API endpoints (`/api/auth/*`, `/api/email/*`, `/api/contact`) exactly as documented in the project README.
+- Keep the API base URL configurable (env var or a small config constant) rather than hardcoding `http://localhost:3000` in component code, since the deployed frontend and backend may end up on different hosts/ports.

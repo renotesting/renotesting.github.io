@@ -1,138 +1,113 @@
 /**
  * RenoFitness Server - Main Entry Point
- * Converts static website to dynamic Node.js/Express application
- * with user authentication and email capabilities
+ * Serves the Astro static build and the Express API.
  */
 
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const path = require('path');
+const fs = require('fs');
+const https = require('https');
 require('dotenv').config();
 
-// Import routes
+const { initializeEmailService } = require('./src/utils/emailService');
 const authRoutes = require('./src/routes/auth');
 const emailRoutes = require('./src/routes/email');
 const contactRoutes = require('./src/routes/contact');
 
-// Initialize Express app
+if (!process.env.JWT_SECRET) {
+  console.error('JWT_SECRET is required. Set it in .env and restart.');
+  process.exit(1);
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+const distPath = path.join(__dirname, 'dist');
 
-// ============================================================================
-// MIDDLEWARE
-// ============================================================================
+function parseCorsOrigins() {
+  const raw = process.env.CORS_ORIGINS || 'http://localhost:4321,http://localhost:3000';
+  return raw.split(',').map((origin) => origin.trim()).filter(Boolean);
+}
 
-// Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https://www.google-analytics.com', 'https://www.googletagmanager.com'],
+      frameSrc: ["'self'", 'https://www.googletagmanager.com']
+    }
+  }
+}));
 
-// CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://renotesting.github.io', 'https://www.renotesting.github.io']
-    : '*',
+  origin: parseCorsOrigins(),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Body parser middleware
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// ============================================================================
-// STATIC FILES - Serve public directory
-// ============================================================================
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ============================================================================
-// API ROUTES
-// ============================================================================
-
-// Authentication routes (register, login)
 app.use('/api/auth', authRoutes);
-
-// Email routes (subscribe to newsletter, send newsletter)
 app.use('/api/email', emailRoutes);
-
-// Contact form routes
 app.use('/api/contact', contactRoutes);
 
-// ============================================================================
-// HEALTH CHECK ENDPOINT
-// ============================================================================
 app.get('/api/health', (req, res) => {
-  res.json({ 
+  res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// ============================================================================
-// FALLBACK ROUTES - Serve index.html for SPA routing
-// ============================================================================
-app.get('*', (req, res) => {
-  // Don't serve index.html for API routes
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
+
+app.use((req, res) => {
   if (req.path.startsWith('/api')) {
-    return res.status(404).json({ error: 'API endpoint not found' });
+    return res.status(404).json({ success: false, message: 'API endpoint not found' });
   }
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+
+  const notFoundPage = path.join(distPath, '404.html');
+  if (fs.existsSync(notFoundPage)) {
+    return res.status(404).sendFile(notFoundPage);
+  }
+
+  res.status(404).type('text/plain').send('Not found');
 });
 
-// ============================================================================
-// ERROR HANDLING MIDDLEWARE
-// ============================================================================
 app.use((err, req, res, next) => {
-  console.error('Error:', err.message);
-  
+  console.error(`Error ${req.method} ${req.path}:`, err.message);
   res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
-    status: err.status || 500,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    success: false,
+    message: 'Internal Server Error'
   });
 });
 
-// =========================================
-// Enable Self-Signed Certificate for local
-// =========================================
-const https = require('https');
-const fs = require('fs');
+initializeEmailService();
 
-const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
+function onListen(protocol) {
+  console.log(`RenoFitness server listening on ${protocol}://localhost:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+}
 
-// ============================================================================
-// START SERVER
-// ============================================================================
-https.createServer(options, app).listen(PORT, () => {
-  console.log(`🔒 HTTPS Server running on: https://localhost:${PORT}`);
-  console.log(`
-╔════════════════════════════════════════════════════════════════╗
-║          🏋️  RenoFitness Server Started Successfully           ║
-╚════════════════════════════════════════════════════════════════╝
+const keyPath = path.join(__dirname, 'key.pem');
+const certPath = path.join(__dirname, 'cert.pem');
 
-📍 Server running on: https://localhost:${PORT}
-🌍 Environment: ${process.env.NODE_ENV || 'development'}
-📧 Email Service: ${process.env.EMAIL_USER || 'Not configured'}
-
-API Endpoints:
-  📝 POST   /api/auth/register          - Register new user
-  🔑 POST   /api/auth/login             - Login user
-  📬 POST   /api/email/subscribe        - Subscribe to newsletter
-  📧 POST   /api/email/send-newsletter  - Send newsletter (admin)
-  💬 POST   /api/contact                - Submit contact form
-  ❤️  GET    /api/health                 - Health check
-
-Documentation:
-  📖 Check /README.md for detailed setup instructions
-  📋 Check /MIGRATION_PLAN.md for migration overview
-
-Tip: Use Postman or curl to test API endpoints
-  `);
-});
+if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+  https.createServer({
+    key: fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath)
+  }, app).listen(PORT, () => onListen('https'));
+} else {
+  app.listen(PORT, () => onListen('http'));
+}
 
 module.exports = app;

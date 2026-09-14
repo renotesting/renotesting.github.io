@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout
+  title="Training Blog | RenoFitness Calgary"
+  description="Notes on resistance training and fitness kickboxing / Muay Thai from RenoFitness in Calgary."
+>
+  <Navbar slot="header" />
+  <div class="page-hero">
+    <h1>Fitness training in YYC</h1>
+    <p>Fat loss, muscle toning, strength, and fun fitness kickboxing.</p>
+  </div>
+  <article class="blog-article" id="resistance">
+    <h2>Resistance training</h2>
+    <h3>What are the differences?</h3>
+    <p>Weight training, resistance training, and muscle conditioning are closely related. The plan changes with the goal. Typical tools include body weight, free weights (dumbbell, barbell, kettlebell), machines, and resistance bands. The more precise term is resistance training.</p>
+    <h3>What you should know</h3>
+    <ul>
+      <li>It increases lean muscle, size, and strength while working against a weight or force.</li>
+      <li>It increases bone density and the strength of tendons and ligaments.</li>
+      <li>It can decrease body fat when paired with sound nutrition.</li>
+      <li>Beginners usually need two or three sessions per week.</li>
+      <li>Complete a PAR-Q and talk with a qualified professional before starting a new program.</li>
+      <li>Rest each muscle group at least 48 hours to support strength and size gains.</li>
+      <li>Varying workouts can help you move past a plateau.</li>
+    </ul>
+    <h3>A note from Reno</h3>
+    <p>I recommend resistance training if you are new to effective training, want more muscle or definition, are managing fat loss, or want better nutrition habits.</p>
+  </article>
+  <article class="blog-article" id="kickboxing">
+    <h2>Fitness kickboxing / Muay Thai</h2>
+    <p>Fitness kickboxing and Muay Thai build power, stamina, agility, coordination, and speed. Techniques also support self-defense: evading attacks and countering. Most people come for the fitness benefits rather than competition.</p>
+    <p>A RenoFitness class is a 60-minute session with safety first: warm-up, technique, heavy bag, partner pads, muscle conditioning, then stretch and cool-down.</p>
+    <h3>Equipment</h3>
+    <ul>
+      <li>Gloves: 8–14 oz for bag work; 16 oz and above for sparring</li>
+      <li>Hand wraps: 108"–180"</li>
+      <li>Shin guards</li>
+      <li>Loose shorts and a T-shirt</li>
+      <li>Head gear and mouth guard for sparring (optional but recommended)</li>
+    </ul>
+    <p>The training suits women and men, kids and older athletes. You do not need to be an athlete to start. I recommend it if you want boxing or Muay Thai skills, a fun way to burn fat, or practical self-defense.</p>
+  </article>
+  <Footer slot="footer" />
+</BaseLayout>

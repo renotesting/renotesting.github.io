@@ -22,5 +22,13 @@
     "password": "$2a$10$example.hashed.password.here",
     "createdAt": "2024-01-20T13:00:00Z",
     "lastLogin": null
+  },
+  {
+    "id": "1789368206431",
+    "name": "Browser Test",
+    "email": "browser-test@example.com",
+    "password": "$2a$10$iwWWxrAxl1XcG7HLItIxAeUr1g1yDVWJIgCPiPwGB6Zo.Ex.skkIK",
+    "createdAt": "2026-09-14T06:43:26.431Z",
+    "lastLogin": null
   }
 ]

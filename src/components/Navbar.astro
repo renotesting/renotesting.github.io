@@ -1,0 +1,27 @@
+---
+import logo from '../assets/logo-renofitness.jpg';
+import AuthStatus from './AuthStatus.jsx';
+import NavToggle from './NavToggle.jsx';
+---
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a class="logo-link" href="/">
+      <img src={logo.src} alt="" width="48" height="48" />
+      <span>RenoFitness</span>
+    </a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#testimonials">Testimonials</a></li>
+        <li><a href="/#services">Services</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <AuthStatus client:load />
+    </div>
+    <NavToggle client:load />
+  </div>
+</header>

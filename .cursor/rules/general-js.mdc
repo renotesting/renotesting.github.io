@@ -1,0 +1,26 @@
+---
+description: General JavaScript style and error-handling conventions for the RenoFitness codebase — always applied
+alwaysApply: true
+---
+
+# General JavaScript Conventions — RenoFitness
+
+## Language target
+- Plain JavaScript (no TypeScript) — do not introduce `.ts` files or TypeScript syntax without an explicit decision to migrate the whole project.
+- Use ES modules or CommonJS consistently with whatever the existing files use (check `server.js` and `src/` for the current convention) — don't mix `require()` and `import` in the same file.
+
+## Async code
+- Use `async`/`await` over raw `.then()` chains for anything more than a single call (this matches the existing route handler style).
+- Every `async` function that can reject (DB/file reads, `nodemailer.sendMail`, `bcrypt.hash`/`compare`, `jwt.verify`) is wrapped in try/catch, with errors surfaced as a proper HTTP response rather than crashing the process.
+
+## Error objects
+- Throw or reject with `Error` instances (or subclasses), not raw strings or plain objects — this keeps stack traces useful for debugging.
+- When catching an error just to log and rethrow, don't swallow the original stack trace.
+
+## Style
+- Prefer `const`/`let` over `var` throughout.
+- Prefer template literals over string concatenation, especially when building email HTML bodies or log messages.
+- Keep functions focused — a route handler should read as: validate input → call a util/service function → shape the response. Business logic (hashing, token generation, email formatting) belongs in `src/utils/`, not inline in the route file.
+
+## Comments
+- Comment *why*, not *what* — the code should already say what it does. Flag any temporary workaround (e.g. JSON-file storage standing in for a real database) with a `// TODO:` so it's easy to grep for later.

@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import NewsletterForm from '../components/NewsletterForm.jsx';
+---
+
+<BaseLayout
+  title="Subscribe | RenoFitness Newsletter"
+  description="Subscribe to the RenoFitness newsletter for training tips and class updates."
+>
+  <Navbar slot="header" />
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Newsletter</h1>
+      <p>Training notes and studio updates, no spam.</p>
+      <NewsletterForm client:load />
+    </div>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

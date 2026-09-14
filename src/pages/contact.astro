@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import ContactForm from '../components/ContactForm.jsx';
+---
+
+<BaseLayout
+  title="Contact | RenoFitness Calgary"
+  description="Contact RenoFitness in Calgary about personal training, kickboxing, or Muay Thai."
+>
+  <Navbar slot="header" />
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Contact</h1>
+      <p>Tell me about your goals and I will get back to you.</p>
+      <ContactForm client:load />
+    </div>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

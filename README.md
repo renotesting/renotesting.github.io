@@ -1,8 +1,8 @@
-# 🏋️ RenoFitness - Node.js/Express Migration
+# RenoFitness — Astro frontend + Express API
 
-**Static website transformed into a dynamic Node.js/Express application with authentication, email system, and contact management.**
+Calgary personal training and fitness kickboxing site. The marketing pages are an Astro static build; Express serves the API and, in production, the built `dist/` folder.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Features](#features)
 - [Project Structure](#project-structure)
@@ -18,96 +18,73 @@
 
 ---
 
-## ✨ Features
+## Features
 
-### ✅ Authentication System
+### Authentication
 - User registration with password hashing
-- User login with JWT tokens
+- User login with JWT tokens stored in `localStorage`
 - Token verification
 - Secure password storage using bcryptjs
 
-### ✅ Email System
+### Email
 - Newsletter subscription management
 - Welcome emails for new subscribers
 - Newsletter broadcasting to multiple subscribers
 - Contact form email notifications
-- Support for Gmail, Outlook, and custom SMTP
 
-### ✅ Contact Management
-- Contact form submissions
-- Automatic confirmation emails
-- Admin notifications
-- Contact history tracking
+### Contact
+- Contact form submissions via `POST /api/contact`
+- Confirmation emails and admin notifications
+- Contact history in JSON storage
 
-### ✅ Frontend Pages
-- Login page with validation
-- Registration page with password confirmation
-- Newsletter subscription form
-- Contact form with admin notifications
+### Frontend
+- Astro pages with a shared layout
+- Hydrated islands only for forms and mobile nav
+- Login, register, newsletter, and contact flows
 
-### ✅ Security Features
-- Helmet.js for HTTP headers security
-- CORS protection
-- JWT authentication
+### Security
+- Helmet.js HTTP headers
+- CORS origins from `CORS_ORIGINS`
+- JWT authentication without a fallback secret
 - Password hashing with bcryptjs
 - Environment variable protection
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-renoFitness/
-├── public/                    # Static files (served by Express)
-│   ├── index.html
-│   ├── blog.html
-│   ├── login.html            # NEW: Login page
-│   ├── register.html         # NEW: Registration page
-│   ├── subscribe.html        # NEW: Newsletter subscription page
-│   ├── contact.html          # Existing contact page (enhanced)
-│   ├── img/                  # Images
-│   ├── carousel1/            # Carousel assets
-│   ├── carousel2/            # Carousel assets
-│   ├── resources/            # CSS, JS, fonts
-│   ├── vendors/              # Third-party libraries
-│   └── widgets/              # UI components
-│
+renotesting.github.io/
 ├── src/
-│   ├── routes/               # API route handlers
-│   │   ├── auth.js          # Authentication endpoints
-│   │   ├── email.js         # Email/newsletter endpoints
-│   │   └── contact.js       # Contact form endpoints
-│   │
-│   ├── middleware/           # Express middleware
-│   │   └── auth.js          # JWT verification middleware
-│   │
-│   └── utils/                # Utility functions
-│       ├── tokenService.js   # JWT token generation/verification
-│       ├── storage.js        # JSON file storage operations
-│       └── emailService.js   # Email sending with Nodemailer
-│
-├── data/                      # Local JSON data storage (gitignored)
-│   ├── users.json            # Registered users
-│   ├── subscribers.json      # Newsletter subscribers
-│   └── contact-submissions.json  # Contact form submissions
-│
-├── server.js                  # Express server entry point
-├── package.json              # Dependencies
-├── .env.example              # Environment variables template
-├── .env                       # Actual environment variables (gitignored)
-├── .gitignore               # Git ignore rules
-├── reorganize.sh            # Repository reorganization script
-└── README.md                # This file
+│   ├── pages/                 # Astro routes: /, /blog, /login, /register, /subscribe, /contact
+│   ├── layouts/BaseLayout.astro
+│   ├── components/            # Static sections + Preact form islands
+│   ├── scripts/               # Shared client fetch + validation
+│   ├── styles/global.css
+│   ├── assets/                # Optimized images
+│   ├── routes/                # Express API
+│   ├── middleware/            # JWT verification
+│   └── utils/                 # token, storage, email, sanitize
+├── static/                    # Astro public dir (favicon)
+├── dist/                      # Astro build output (gitignored)
+├── data/                      # JSON storage (gitignored)
+├── server.js
+├── astro.config.mjs
+├── package.json
+├── .env.example
+└── README.md
 ```
+
+The older `public/*.html` files are leftover from the pre-Astro site and are not served by Express.
 
 ---
 
-## 🔧 Prerequisites
+## Prerequisites
 
-- **Node.js** >= 14.0.0
-- **npm** >= 6.0.0
-- **Git** for version control
-- **Gmail account** (for email functionality) - optional
+- **Node.js** >= 18.17.0
+- **npm** >= 9.0.0
+- **Git**
+- **Gmail account** (optional, for email)
 
 ### Gmail Setup (for Email Features)
 
@@ -120,13 +97,12 @@ renoFitness/
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/renotesting/renotesting.github.io.git
 cd renotesting.github.io
-git checkout redesign
 ```
 
 ### 2. Install Dependencies
@@ -140,20 +116,11 @@ cp .env.example .env
 ```
 
 ### 4. Edit `.env` Configuration
-```bash
-# Open .env and update with your settings:
-NODE_ENV=development
-PORT=3000
-JWT_SECRET=your-super-secret-key-minimum-32-characters-long
-EMAIL_PROVIDER=gmail
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-app-specific-password
-ADMIN_EMAIL=RenoStudio@hotmail.com
-```
+Set `JWT_SECRET` (required, no default), `CORS_ORIGINS`, and optional email credentials. Leave `PUBLIC_API_URL` empty when the browser talks to the same host as Express.
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -161,46 +128,52 @@ ADMIN_EMAIL=RenoStudio@hotmail.com
 |----------|-------------|----------|
 | `NODE_ENV` | Environment mode | `development` or `production` |
 | `PORT` | Server port | `3000` |
-| `JWT_SECRET` | Secret key for JWT tokens | `your-super-secret-key-...` |
+| `JWT_SECRET` | Secret key for JWT tokens (required) | long random string |
 | `JWT_EXPIRATION` | Token expiration time | `7d` or `24h` |
 | `EMAIL_PROVIDER` | Email service provider | `gmail` or `outlook` |
 | `EMAIL_USER` | Sender email address | `your-email@gmail.com` |
-| `EMAIL_PASSWORD` | Email password/app password | `xxxx xxxx xxxx xxxx` |
+| `EMAIL_PASSWORD` | Email password/app password | app password |
 | `ADMIN_EMAIL` | Admin email for notifications | `admin@example.com` |
 | `EMAIL_FROM_NAME` | Sender display name | `RenoFitness` |
 | `DATA_DIR` | Path to data directory | `./data` |
 | `BCRYPT_ROUNDS` | Password hash rounds | `10` |
+| `CORS_ORIGINS` | Comma-separated allowed origins | `http://localhost:4321,http://localhost:3000` |
+| `PUBLIC_API_URL` | API base for the frontend; empty = same origin | `http://localhost:3000` |
+| `PUBLIC_GTM_ID` | Optional Google Tag Manager id | `GTM-XXXX` |
+| `PUBLIC_GA_ID` | Optional Google Analytics id | `G-XXXX` |
 
 ---
 
-## 🚀 Running Locally
+## Running Locally
 
-### Development Mode (with auto-reload)
+### Frontend + API together (recommended in development)
+```bash
+npm run dev:all
+```
+
+- Astro: http://localhost:4321
+- Express API: http://localhost:3000
+
+Set `PUBLIC_API_URL=http://localhost:3000` and `CORS_ORIGINS=http://localhost:4321` so the Astro dev server can call the API.
+
+### API only
 ```bash
 npm run dev
 ```
 
-You should see:
-```
-╔════════════════════════════════════════════════════════════════╗
-║          🏋️  RenoFitness Server Started Successfully           ║
-╚════════════════════════════════════════════════════════════════╝
-
-📍 Server running on: http://localhost:3000
-🌍 Environment: development
-```
-
-### Production Mode
+### Production-style (Astro build served by Express)
 ```bash
+npm run build
 npm start
 ```
 
-### Access the Application
-- **Website**: http://localhost:3000
-- **Login Page**: http://localhost:3000/login.html
-- **Register Page**: http://localhost:3000/register.html
-- **Subscribe Page**: http://localhost:3000/subscribe.html
-- **Contact Page**: http://localhost:3000/contact.html
+Then open:
+- http://localhost:3000
+- http://localhost:3000/login
+- http://localhost:3000/register
+- http://localhost:3000/subscribe
+- http://localhost:3000/contact
+- http://localhost:3000/blog
 
 ---
 
@@ -400,34 +373,16 @@ GET /api/contact/:submissionId
 
 ---
 
-## 🌐 Frontend Pages
+## Frontend Pages
 
-### Login Page (`public/login.html`)
-- User email and password fields
-- Client-side form validation
-- JWT token storage in localStorage
-- Error message display
-- Link to registration page
+- `/` — home (about, photos, testimonials, services, contact island)
+- `/blog` — resistance training and kickboxing notes
+- `/login` — login island (`client:load`)
+- `/register` — register island (`client:load`)
+- `/subscribe` — newsletter island
+- `/contact` — contact island (`client:load`)
 
-### Register Page (`public/register.html`)
-- Name, email, password fields
-- Password confirmation validation
-- Client-side validation before submission
-- Success message with redirect to login
-- Error handling
-
-### Newsletter Subscribe Page (`public/subscribe.html`)
-- Name and email fields
-- Success message after subscription
-- Email confirmation notice
-- Unsubscribe link
-
-### Contact Form (`public/contact.html`)
-- Name, email, phone, subject, message fields
-- Client-side validation
-- Automatic admin notification
-- User confirmation email
-- Form reset on success
+Forms call `/api/auth/*`, `/api/email/*`, and `/api/contact`. Successful login and register store the JWT in `localStorage`.
 
 ---
 

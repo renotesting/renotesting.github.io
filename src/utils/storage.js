@@ -7,6 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
+// TODO: JSON-file storage is a stand-in for a real database; reads/writes are not multi-instance safe.
 const DATA_DIR = process.env.DATA_DIR || './data';
 
 // Ensure data directory exists
