@@ -1,0 +1,54 @@
+# Render blueprint for the Astro build + Express API.
+# Creating a service from this file does not affect the live site: traffic only moves
+# when the renofitness.ca DNS records change. See "Deployment" in README.md.
+services:
+  - type: web
+    name: renofitness
+    runtime: node
+    # A paid plan is required for the persistent disk below.
+    plan: starter
+    branch: redesign
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    disk:
+      # User, subscriber and contact JSON files live here. Without a disk they are
+      # wiped on every deploy and restart.
+      name: renofitness-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      # Astro 7 needs 22.23.4 or newer.
+      - key: NODE_VERSION
+        value: 22.23.4
+      - key: NODE_ENV
+        value: production
+      # Rate limits need the real visitor IP. Check this after deploying: see README.
+      - key: TRUST_PROXY
+        value: 1
+      - key: DATA_DIR
+        value: /var/data
+      - key: SITE_URL
+        value: https://www.renofitness.ca
+      - key: CORS_ORIGINS
+        value: https://www.renofitness.ca
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: 7d
+      - key: BCRYPT_ROUNDS
+        value: 10
+      - key: EMAIL_PROVIDER
+        value: gmail
+      - key: EMAIL_FROM_NAME
+        value: RenoFitness
+      # Read at build time. Same container the old site used.
+      - key: PUBLIC_GTM_ID
+        value: GTM-MWQ2259
+      # Secrets: set these in the Render dashboard.
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false

@@ -5,10 +5,10 @@ paths:
   - "src/layouts/**/*.astro"
 ---
 
-# Astro Components & Pages — RenoFitness (planned frontend)
+# Astro Components & Pages — RenoFitness
 
 ## Routing
-- `public/index.html` → `src/pages/index.astro`; `blog.html` → `blog.astro`; `login.html` → `login.astro`; `register.html` → `register.astro`; `subscribe.html` → `subscribe.astro`; `contact.html` → `contact.astro`.
+- Each page is a file in `src/pages/`. When a URL changes, add a redirect in `src/middleware/legacyRedirects.js`.
 - Shared `<head>`, nav, footer go in `src/layouts/BaseLayout.astro`; never duplicate per page.
 
 ## Components
@@ -17,8 +17,9 @@ paths:
 - Only real interactivity (forms calling the Express API, mobile nav toggle) becomes an island.
 
 ## Assets
-- Move assets from `carousel1/`, `carousel2/`, `widgets/`, `vendors/`, `resources/` into `src/assets/` (optimized) or `public/` (as-is).
-- Don't port jQuery carousel/widget code blindly; prefer CSS-only or small island replacements first.
+- Put images in `src/assets/` and render them with Astro's `<Image>` so they are resized and compressed; never use a plain `<img src={x.src}>`, which ships the original file.
+- `static/` is for files that must keep their exact name and bytes (e.g. the favicon).
+- Don't add jQuery; prefer CSS-only or small island replacements.
 
 ## SEO
 - Each page passes its own `<title>` and meta description to `BaseLayout`.

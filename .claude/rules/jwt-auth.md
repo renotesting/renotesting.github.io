@@ -23,8 +23,8 @@ paths:
 - Attach the decoded payload to `req.user` for downstream handlers.
 
 ## Admin-gated routes
-- `GET /api/email/subscribers` and `POST /api/email/send-newsletter` use the shared auth middleware; never re-implement verification inline.
-- If roles are added later, enforce them explicitly in middleware, not via scattered email/id comparisons.
+- `GET /api/email/subscribers`, `POST /api/email/send-newsletter` and `GET /api/contact/:id` use `verifyAuth` then `requireAdmin`; never re-implement verification inline.
+- Admin comes from `role` on the stored user, set only by `scripts/make-admin.js`. Never grant it from request data or by comparing emails: registration doesn't verify addresses.
 
 ## General
 - Never log full JWTs or `JWT_SECRET`.

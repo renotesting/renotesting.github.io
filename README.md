@@ -46,6 +46,8 @@ Calgary personal training and fitness kickboxing site. The marketing pages are a
 - Helmet.js HTTP headers
 - CORS origins from `CORS_ORIGINS`
 - JWT authentication without a fallback secret
+- Admin role for subscriber lists, newsletters, and contact messages
+- Rate limits on login, registration, subscribe, unsubscribe, and contact
 - Password hashing with bcryptjs
 - Environment variable protection
 
@@ -56,32 +58,34 @@ Calgary personal training and fitness kickboxing site. The marketing pages are a
 ```
 renotesting.github.io/
 ├── src/
-│   ├── pages/                 # Astro routes: /, /blog, /login, /register, /subscribe, /contact
+│   ├── pages/                 # Astro routes (see Frontend Pages)
 │   ├── layouts/BaseLayout.astro
 │   ├── components/            # Static sections + Preact form islands
 │   ├── scripts/               # Shared client fetch + validation
 │   ├── styles/global.css
 │   ├── assets/                # Optimized images
 │   ├── routes/                # Express API
-│   ├── middleware/            # JWT verification
+│   ├── middleware/            # JWT and admin checks, rate limits, old URL redirects
 │   └── utils/                 # token, storage, email, sanitize
+├── scripts/make-admin.js      # Grants admin access to an account
 ├── static/                    # Astro public dir (favicon)
 ├── dist/                      # Astro build output (gitignored)
 ├── data/                      # JSON storage (gitignored)
 ├── server.js
 ├── astro.config.mjs
+├── render.yaml                # Render hosting blueprint
 ├── package.json
 ├── .env.example
 └── README.md
 ```
 
-The older `public/*.html` files are leftover from the pre-Astro site and are not served by Express.
+The old static site remains on the `master` branch.
 
 ---
 
 ## Prerequisites
 
-- **Node.js** >= 18.17.0
+- **Node.js** >= 22.23.4
 - **npm** >= 9.0.0
 - **Git**
 - **Gmail account** (optional, for email)
@@ -128,19 +132,34 @@ Set `JWT_SECRET` (required, no default), `CORS_ORIGINS`, and optional email cred
 |----------|-------------|----------|
 | `NODE_ENV` | Environment mode | `development` or `production` |
 | `PORT` | Server port | `3000` |
+| `SITE_URL` | Public site address, used for links in emails | `https://www.renofitness.ca` |
 | `JWT_SECRET` | Secret key for JWT tokens (required) | long random string |
 | `JWT_EXPIRATION` | Token expiration time | `7d` or `24h` |
-| `EMAIL_PROVIDER` | Email service provider | `gmail` or `outlook` |
+| `EMAIL_PROVIDER` | Email service provider | `gmail`, `outlook`, or `custom` |
+| `SMTP_HOST` | SMTP server (`custom` provider only) | `smtp.example.com` |
+| `SMTP_PORT` | SMTP port (`custom` provider only, default `587`) | `587` |
+| `SMTP_SECURE` | Use TLS from connection start (`custom` provider only) | `true` or `false` |
 | `EMAIL_USER` | Sender email address | `your-email@gmail.com` |
 | `EMAIL_PASSWORD` | Email password/app password | app password |
-| `ADMIN_EMAIL` | Admin email for notifications | `admin@example.com` |
+| `ADMIN_EMAIL` | Receives contact notifications; doesn't grant admin access | `admin@example.com` |
 | `EMAIL_FROM_NAME` | Sender display name | `RenoFitness` |
 | `DATA_DIR` | Path to data directory | `./data` |
 | `BCRYPT_ROUNDS` | Password hash rounds | `10` |
 | `CORS_ORIGINS` | Comma-separated allowed origins | `http://localhost:4321,http://localhost:3000` |
+| `TRUST_PROXY` | Number of proxies in front of the app, used to find visitor IPs for rate limits | `0` locally, usually `1` when hosted |
 | `PUBLIC_API_URL` | API base for the frontend; empty = same origin | `http://localhost:3000` |
 | `PUBLIC_GTM_ID` | Optional Google Tag Manager id | `GTM-XXXX` |
 | `PUBLIC_GA_ID` | Optional Google Analytics id | `G-XXXX` |
+
+### Admin Access
+
+Everyone who registers is a normal user. To make an account an admin, register it on the site, then run:
+
+```bash
+npm run make-admin -- you@example.com
+```
+
+Registration doesn't verify email addresses, so register your account **before** the site is public. Otherwise someone else could register that address first and you would be promoting their account.
 
 ---
 
@@ -294,16 +313,18 @@ POST /api/email/unsubscribe
 Content-Type: application/json
 
 {
-  "email": "jane@example.com"
+  "token": "<signed token from an email link>"
 }
 ```
+
+The token can also be sent as `?token=` in the query string. Newsletter and welcome emails link to `/unsubscribe/?token=...`, and newsletters include `List-Unsubscribe` headers for one-click unsubscribe. An email address alone isn't accepted, so nobody can unsubscribe someone else.
 
 ---
 
 #### Get All Subscribers (Admin)
 ```bash
 GET /api/email/subscribers
-Authorization: Bearer <valid-jwt-token>
+Authorization: Bearer <admin-jwt-token>
 ```
 
 **Response (200 OK):**
@@ -328,7 +349,7 @@ Authorization: Bearer <valid-jwt-token>
 #### Send Newsletter (Admin)
 ```bash
 POST /api/email/send-newsletter
-Authorization: Bearer <valid-jwt-token>
+Authorization: Bearer <admin-jwt-token>
 Content-Type: application/json
 
 {
@@ -350,10 +371,13 @@ Content-Type: application/json
   "name": "John Doe",
   "email": "john@example.com",
   "phone": "403-555-1234",
+  "findUs": "search",
   "subject": "Question about classes",
   "message": "I'm interested in learning more about your kickboxing classes..."
 }
 ```
+
+`phone` and `findUs` are optional. `findUs` is one of `friends`, `search`, `ad`, or `other`.
 
 **Response (201 Created):**
 ```json
@@ -366,10 +390,23 @@ Content-Type: application/json
 
 ---
 
-#### Get Contact Submission
+#### Get Contact Submission (Admin)
 ```bash
 GET /api/contact/:submissionId
+Authorization: Bearer <admin-jwt-token>
 ```
+
+### Rate Limits
+
+Limits are per IP address, and going over returns `429` with the usual `{ success, message }` body.
+
+| Endpoint | Limit |
+|----------|-------|
+| `POST /api/auth/login` | 10 failed attempts per 15 minutes |
+| `POST /api/auth/register` | 10 per hour |
+| `POST /api/email/subscribe` | 10 per hour |
+| `POST /api/email/unsubscribe` | 100 per 15 minutes |
+| `POST /api/contact` | 10 per hour |
 
 ---
 
@@ -381,6 +418,10 @@ GET /api/contact/:submissionId
 - `/register` — register island (`client:load`)
 - `/subscribe` — newsletter island
 - `/contact` — contact island (`client:load`)
+- `/unsubscribe` — confirm page for the unsubscribe link in emails (not indexed)
+- `/generator` — loyalty ID generator (not indexed)
+
+Old `.html` URLs redirect to these pages, see `src/middleware/legacyRedirects.js`.
 
 Forms call `/api/auth/*`, `/api/email/*`, and `/api/contact`. Successful login and register store the JWT in `localStorage`.
 
@@ -446,39 +487,26 @@ curl -X POST http://localhost:3000/api/contact \
 
 ## 🚢 Deployment
 
-### Deploy to Heroku
+The site needs a Node host with a **persistent disk**. User, subscriber, and contact data are JSON files, so on a host with a temporary disk they are lost on every deploy or restart. [render.yaml](./render.yaml) sets this up on Render, and any host works if it runs `npm ci && npm run build`, then `npm start`, with `DATA_DIR` on persistent storage.
 
-```bash
-# 1. Create Heroku app
-heroku create your-app-name
+`www.renofitness.ca` currently points at GitHub Pages, which serves `master`.
 
-# 2. Set environment variables
-heroku config:set NODE_ENV=production
-heroku config:set JWT_SECRET="your-secret-key"
-heroku config:set EMAIL_USER="your-email@gmail.com"
-heroku config:set EMAIL_PASSWORD="your-app-password"
-heroku config:set ADMIN_EMAIL="admin@example.com"
+### 1. Create the service
 
-# 3. Deploy
-git push heroku redesign:main
+1. In Render, choose **New > Blueprint** and connect this repository.
+2. Set `EMAIL_USER`, `EMAIL_PASSWORD`, and `ADMIN_EMAIL` when prompted.
+3. Test the site on its temporary `onrender.com` address. Set `SITE_URL` and `CORS_ORIGINS` to that address while testing, then change them back.
+4. Register your own account, then run `npm run make-admin -- you@example.com` in the Render shell.
+5. Check rate limiting sees real visitors. Send 11 wrong passwords to `/api/auth/login` and confirm the 11th returns `429`, then log in from a different network and confirm it isn't blocked. If it is, everyone is sharing one limit and `TRUST_PROXY` needs a different value.
 
-# 4. View logs
-heroku logs --tail
-```
+### 2. Move the domain
 
-### Deploy to Render.com
+Do these in order, so the site stays up throughout:
 
-1. Connect your GitHub repository
-2. Select the `redesign` branch
-3. Add environment variables in the dashboard
-4. Deploy automatically
-
-### Deploy to Railway
-
-1. Connect GitHub repository
-2. Create a new project
-3. Add environment variables
-4. Deploy
+1. Add `www.renofitness.ca` under **Settings > Custom Domains** in Render.
+2. Change the DNS records as Render instructs, and wait until the site loads from Render with a valid certificate.
+3. Only then merge `redesign` into `master`, and change `branch` in `render.yaml` to `master`. Merging earlier would make GitHub Pages serve the raw repository files.
+4. Turn off GitHub Pages and delete `CNAME`.
 
 ---
 

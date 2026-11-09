@@ -8,20 +8,28 @@ const router = express.Router();
 
 const { sendWelcomeEmail, sendNewsletter } = require('../utils/emailService');
 const { appendToFile, findInFile, filterFile, deleteFromFile } = require('../utils/storage');
-const { verifyAuth } = require('../middleware/auth');
+const { verifyAuth, requireAdmin } = require('../middleware/auth');
+const { subscribeLimiter, unsubscribeLimiter } = require('../middleware/rateLimit');
+const { verifyUnsubscribeToken } = require('../utils/tokenService');
 
 const SUBSCRIBERS_FILE = 'subscribers.json';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_NAME_LENGTH = 100;
+const MAX_EMAIL_LENGTH = 254;
 
-router.post('/subscribe', async (req, res) => {
+router.post('/subscribe', subscribeLimiter, async (req, res) => {
   try {
     const { name, email } = req.body;
 
-    if (!name || !email) {
+    if (typeof name !== 'string' || typeof email !== 'string' || !name || !email) {
       return res.status(400).json({ success: false, message: 'Name and email are required' });
     }
 
-    if (!EMAIL_REGEX.test(email)) {
+    if (name.length > MAX_NAME_LENGTH) {
+      return res.status(400).json({ success: false, message: 'Name is too long' });
+    }
+
+    if (email.length > MAX_EMAIL_LENGTH || !EMAIL_REGEX.test(email)) {
       return res.status(400).json({ success: false, message: 'Invalid email format' });
     }
 
@@ -43,11 +51,13 @@ router.post('/subscribe', async (req, res) => {
       return res.status(500).json({ success: false, message: 'Failed to subscribe' });
     }
 
-    await sendWelcomeEmail(email, name, 'subscriber');
+    const welcome = await sendWelcomeEmail(email, name, 'subscriber', newSubscriber.id);
 
     res.status(201).json({
       success: true,
-      message: 'Subscription successful! Check your email for confirmation.',
+      message: welcome.success
+        ? 'Subscription successful! Check your email for confirmation.'
+        : "You're subscribed! We couldn't send a confirmation email, but you're on the list.",
       subscriber: {
         id: newSubscriber.id,
         name: newSubscriber.name,
@@ -60,22 +70,22 @@ router.post('/subscribe', async (req, res) => {
   }
 });
 
-router.post('/unsubscribe', (req, res) => {
+// Requires the signed token from an email link: knowing someone's address isn't enough to remove them.
+router.post('/unsubscribe', unsubscribeLimiter, (req, res) => {
   try {
-    const { email } = req.body;
+    // Query string: mail clients' one-click unsubscribe POSTs to the URL in the List-Unsubscribe header.
+    const token = req.body.token || req.query.token;
 
-    if (!email) {
-      return res.status(400).json({ success: false, message: 'Email is required' });
+    let subscriberId;
+    try {
+      subscriberId = verifyUnsubscribeToken(String(token));
+    } catch (error) {
+      return res.status(400).json({ success: false, message: 'This unsubscribe link is not valid' });
     }
 
-    const subscriber = findInFile(SUBSCRIBERS_FILE, (s) => s.email === email);
-    if (!subscriber) {
-      return res.status(404).json({ success: false, message: 'Subscriber not found' });
-    }
-
-    const deleted = deleteFromFile(SUBSCRIBERS_FILE, (s) => s.email === email);
-
-    if (!deleted) {
+    // Repeating a valid link still succeeds: the person is unsubscribed either way.
+    const removed = deleteFromFile(SUBSCRIBERS_FILE, (s) => s.id === subscriberId);
+    if (!removed) {
       return res.status(500).json({ success: false, message: 'Failed to unsubscribe' });
     }
 
@@ -89,7 +99,7 @@ router.post('/unsubscribe', (req, res) => {
   }
 });
 
-router.get('/subscribers', verifyAuth, (req, res) => {
+router.get('/subscribers', verifyAuth, requireAdmin, (req, res) => {
   try {
     const subscribers = filterFile(SUBSCRIBERS_FILE, (s) => s.status === 'active');
 
@@ -104,7 +114,7 @@ router.get('/subscribers', verifyAuth, (req, res) => {
   }
 });
 
-router.post('/send-newsletter', verifyAuth, async (req, res) => {
+router.post('/send-newsletter', verifyAuth, requireAdmin, async (req, res) => {
   try {
     const { subject, html } = req.body;
 
@@ -113,13 +123,12 @@ router.post('/send-newsletter', verifyAuth, async (req, res) => {
     }
 
     const subscribers = filterFile(SUBSCRIBERS_FILE, (s) => s.status === 'active');
-    const emails = subscribers.map((s) => s.email);
 
-    if (emails.length === 0) {
+    if (subscribers.length === 0) {
       return res.status(400).json({ success: false, message: 'No active subscribers' });
     }
 
-    const results = await sendNewsletter(emails, subject, html);
+    const results = await sendNewsletter(subscribers, subject, html);
 
     res.status(200).json({
       success: true,

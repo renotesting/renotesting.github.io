@@ -10,7 +10,7 @@ paths:
 - Route handlers live in `src/routes/` (one file per resource: `auth.js`, `email.js`, `contact.js`).
 - Cross-cutting concerns live in `src/middleware/` (e.g. `auth.js` for JWT verification).
 - Shared logic lives in `src/utils/` (`tokenService.js`, `storage.js`, `emailService.js`).
-- Static frontend pages are served from `public/` — no server logic there.
+- The Astro build in `dist/` is served as static files — no server logic there.
 - Keep `server.js` thin: mount middleware, mount routers, listen. No business logic.
 
 ## Route handler style

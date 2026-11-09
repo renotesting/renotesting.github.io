@@ -15,6 +15,7 @@ const { initializeEmailService } = require('./src/utils/emailService');
 const authRoutes = require('./src/routes/auth');
 const emailRoutes = require('./src/routes/email');
 const contactRoutes = require('./src/routes/contact');
+const legacyRedirects = require('./src/middleware/legacyRedirects');
 
 if (!process.env.JWT_SECRET) {
   console.error('JWT_SECRET is required. Set it in .env and restart.');
@@ -24,6 +25,12 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 const distPath = path.join(__dirname, 'dist');
+
+// A hop count, never `true`: that would let clients fake their IP and dodge rate limits.
+const trustedProxies = parseInt(process.env.TRUST_PROXY || '0', 10);
+if (trustedProxies > 0) {
+  app.set('trust proxy', trustedProxies);
+}
 
 function parseCorsOrigins() {
   const raw = process.env.CORS_ORIGINS || 'http://localhost:4321,http://localhost:3000';
@@ -51,8 +58,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/email', emailRoutes);
@@ -66,8 +73,13 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Before static files: dist/index.html exists, so /index.html would never redirect otherwise.
+app.use(legacyRedirects);
+
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
+} else {
+  console.warn('dist/ not found, so only the API is available. Run "npm run build" to serve the site.');
 }
 
 app.use((req, res) => {

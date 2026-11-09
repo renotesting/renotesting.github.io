@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import clientPhoto from '../assets/ClientMingAi.jpeg';
 ---
 
@@ -8,7 +9,7 @@ import clientPhoto from '../assets/ClientMingAi.jpeg';
     <blockquote class="quote">
       <p>我非常喜欢Reno的私教服务：他非常专业。对任何训练动作的要求很高，每次的训练可以达到最好的训练效果，并且安全。他是我目前最关心学员的私教老师。</p>
       <footer>
-        <img src={clientPhoto.src} alt="" width="48" height="48" />
+        <Image src={clientPhoto} width={96} height={96} fit="cover" alt="" loading="lazy" />
         <cite>Ming A., Calgary</cite>
       </footer>
     </blockquote>

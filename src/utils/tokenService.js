@@ -3,6 +3,7 @@
  * Handles generation and verification of JWT tokens
  */
 
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -41,6 +42,31 @@ function verifyToken(token) {
   }
 }
 
+// Signed with a derived key so an unsubscribe token from an email can never pass
+// verifyToken() and be used as a login token.
+function unsubscribeKey() {
+  requireSecret();
+  return crypto.createHmac('sha256', JWT_SECRET).update('unsubscribe').digest('hex');
+}
+
+// No expiry: unsubscribe links in old emails must keep working. Carries only the
+// subscriber id so the email address never ends up in a URL.
+function generateUnsubscribeToken(subscriberId) {
+  return jwt.sign({ sid: subscriberId }, unsubscribeKey(), { algorithm: 'HS256' });
+}
+
+function verifyUnsubscribeToken(token) {
+  try {
+    const decoded = jwt.verify(token, unsubscribeKey(), { algorithms: ['HS256'] });
+    if (!decoded.sid) {
+      throw new Error('Token has no subscriber id');
+    }
+    return decoded.sid;
+  } catch (error) {
+    throw new Error('Invalid unsubscribe token');
+  }
+}
+
 function extractToken(authHeader) {
   if (!authHeader) return null;
 
@@ -55,5 +81,7 @@ function extractToken(authHeader) {
 module.exports = {
   generateToken,
   verifyToken,
+  generateUnsubscribeToken,
+  verifyUnsubscribeToken,
   extractToken
 };

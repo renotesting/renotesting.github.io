@@ -6,8 +6,56 @@
 
 const nodemailer = require('nodemailer');
 const { escapeHtml } = require('./sanitize');
+const { generateUnsubscribeToken } = require('./tokenService');
 
 let transporter = null;
+
+function getSiteUrl() {
+  return (process.env.SITE_URL || 'https://www.renofitness.ca').replace(/\/+$/, '');
+}
+
+function unsubscribeLinks(subscriberId) {
+  const token = encodeURIComponent(generateUnsubscribeToken(subscriberId));
+  const siteUrl = getSiteUrl();
+  return {
+    // A page with a confirm button: mail scanners that open links must not unsubscribe anyone.
+    page: `${siteUrl}/unsubscribe/?token=${token}`,
+    // RFC 8058 one-click target for the unsubscribe button mail clients show.
+    oneClick: `${siteUrl}/api/email/unsubscribe?token=${token}`
+  };
+}
+
+function unsubscribeFooter(pageUrl) {
+  return `<p style="font-size: 12px; color: #666; text-align: center; margin-top: 20px;">You're receiving this because you subscribed to the RenoFitness newsletter. <a href="${escapeHtml(pageUrl)}">Unsubscribe</a></p>`;
+}
+
+function withFooter(html, footer) {
+  return /<\/body>/i.test(html)
+    ? html.replace(/<\/body>/i, () => `${footer}</body>`)
+    : `${html}${footer}`;
+}
+
+function buildTransportOptions(provider, auth) {
+  if (provider === 'gmail' || provider === 'outlook') {
+    return { service: provider, auth };
+  }
+
+  if (provider === 'custom') {
+    if (!process.env.SMTP_HOST) {
+      console.warn('⚠️  EMAIL_PROVIDER=custom requires SMTP_HOST. Email service disabled.');
+      return null;
+    }
+    return {
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587', 10),
+      secure: process.env.SMTP_SECURE === 'true',
+      auth
+    };
+  }
+
+  console.warn(`⚠️  Unknown EMAIL_PROVIDER "${provider}". Email service disabled.`);
+  return null;
+}
 
 /**
  * Initialize email transporter
@@ -24,24 +72,17 @@ function initializeEmailService() {
       return false;
     }
     
-    if (emailProvider === 'gmail') {
-      transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: emailUser,
-          pass: emailPassword // Should be app-specific password, not regular password
-        }
-      });
-    } else if (emailProvider === 'outlook') {
-      transporter = nodemailer.createTransport({
-        service: 'outlook',
-        auth: {
-          user: emailUser,
-          pass: emailPassword
-        }
-      });
+    // Should be an app-specific password, not the account's regular password
+    const transportOptions = buildTransportOptions(emailProvider, {
+      user: emailUser,
+      pass: emailPassword
+    });
+
+    if (!transportOptions) {
+      return false;
     }
-    
+
+    transporter = nodemailer.createTransport(transportOptions);
     console.log(`✅ Email service initialized with ${emailProvider}`);
     return true;
   } catch (error) {
@@ -57,9 +98,10 @@ function initializeEmailService() {
  * @param {string} options.subject - Email subject
  * @param {string} options.html - HTML email body
  * @param {string} options.text - Plain text email body (optional)
+ * @param {Object} options.headers - Extra email headers (optional)
  * @returns {Promise<Object>} Email sending result
  */
-async function sendEmail({ to, subject, html, text }) {
+async function sendEmail({ to, subject, html, text, headers }) {
   try {
     if (!transporter) {
       throw new Error('Email service not initialized');
@@ -70,7 +112,8 @@ async function sendEmail({ to, subject, html, text }) {
       to,
       subject,
       html,
-      text: text || html
+      text: text || html,
+      ...(headers ? { headers } : {})
     };
     
     const info = await transporter.sendMail(mailOptions);
@@ -95,10 +138,13 @@ async function sendEmail({ to, subject, html, text }) {
  * @param {string} email - Recipient email
  * @param {string} name - Recipient name
  * @param {string} type - Type of welcome (user or subscriber)
+ * @param {string} subscriberId - Subscriber id, used for the unsubscribe link (subscribers only)
  * @returns {Promise<Object>} Email sending result
  */
-async function sendWelcomeEmail(email, name, type = 'user') {
-  const subject = type === 'subscriber' 
+async function sendWelcomeEmail(email, name, type = 'user', subscriberId = null) {
+  const siteUrl = getSiteUrl();
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const subject = type === 'subscriber'
     ? '🎉 Welcome to RenoFitness Newsletter!'
     : '🏋️ Welcome to RenoFitness Community!';
   
@@ -137,14 +183,15 @@ async function sendWelcomeEmail(email, name, type = 'user') {
             <p>Your account has been successfully created. You can now access exclusive member features and book training sessions.</p>
             `}
             
-            <p>Questions? Feel free to contact us at ${process.env.ADMIN_EMAIL}</p>
-            
+            <p>Questions? ${adminEmail ? `Feel free to contact us at ${escapeHtml(adminEmail)}.` : `<a href="${siteUrl}/contact/">Get in touch with us</a>.`}</p>
+
             <p>Stay strong! 💪<br>
             <strong>The RenoFitness Team</strong></p>
           </div>
           <div class="footer">
-            <p>&copy; 2024 RenoFitness. All rights reserved.</p>
-            <p><a href="#">Visit our website</a> | <a href="#">Follow us on social media</a></p>
+            <p>&copy; ${new Date().getFullYear()} RenoFitness. All rights reserved.</p>
+            <p><a href="${siteUrl}/">Visit our website</a> | <a href="https://www.facebook.com/renofitness/">Follow us on Facebook</a></p>
+            ${subscriberId ? `<p><a href="${escapeHtml(unsubscribeLinks(subscriberId).page)}">Unsubscribe</a></p>` : ''}
           </div>
         </div>
       </body>
@@ -160,29 +207,34 @@ async function sendWelcomeEmail(email, name, type = 'user') {
 
 /**
  * Send newsletter to multiple subscribers
- * @param {Array<string>} emails - List of recipient emails
+ * @param {Array<{id: string, email: string}>} subscribers - Recipients
  * @param {string} subject - Email subject
  * @param {string} html - Email HTML content
  * @returns {Promise<Object>} Results with success/failure counts
  */
-async function sendNewsletter(emails, subject, html) {
+async function sendNewsletter(subscribers, subject, html) {
   const results = {
-    total: emails.length,
+    total: subscribers.length,
     sent: 0,
     failed: 0,
     errors: []
   };
-  
-  console.log(`📧 Sending newsletter to ${emails.length} subscribers...`);
-  
-  for (const email of emails) {
+
+  console.log(`📧 Sending newsletter to ${subscribers.length} subscribers...`);
+
+  for (const { id, email } of subscribers) {
     try {
+      const links = unsubscribeLinks(id);
       const result = await sendEmail({
         to: email,
         subject,
-        html
+        html: withFooter(html, unsubscribeFooter(links.page)),
+        headers: {
+          'List-Unsubscribe': `<${links.oneClick}>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+        }
       });
-      
+
       if (result.success) {
         results.sent++;
       } else {

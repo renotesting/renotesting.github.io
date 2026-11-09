@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { postJson, NETWORK_ERROR_MESSAGE } from '../scripts/api.js';
-import { isValidEmail, isNonEmpty, passwordsMatch } from '../scripts/validation.js';
+import { isValidEmail, isNonEmpty, passwordsMatch, MIN_PASSWORD_LENGTH } from '../scripts/validation.js';
 
 export default function RegisterForm() {
   const [name, setName] = useState('');
@@ -19,8 +19,8 @@ export default function RegisterForm() {
     const nextErrors = {};
     if (!isNonEmpty(name)) nextErrors.name = 'Name is required.';
     if (!isValidEmail(email)) nextErrors.email = 'Enter a valid email.';
-    if (!isNonEmpty(password) || password.length < 6) {
-      nextErrors.password = 'Password must be at least 6 characters.';
+    if (!isNonEmpty(password) || password.length < MIN_PASSWORD_LENGTH) {
+      nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
     }
     if (!passwordsMatch(password, confirmPassword)) {
       nextErrors.confirmPassword = 'Passwords do not match.';

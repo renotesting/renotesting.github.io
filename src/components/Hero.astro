@@ -1,9 +1,17 @@
 ---
+import { Image } from 'astro:assets';
 import heroImage from '../assets/hero.PNG';
 ---
 
 <section class="hero">
-  <img src={heroImage.src} alt="Athletes training kickboxing pads at RenoFitness" />
+  <Image
+    src={heroImage}
+    widths={[640, 1024, 1334]}
+    sizes="100vw"
+    alt="Athletes training kickboxing pads at RenoFitness"
+    loading="eager"
+    fetchpriority="high"
+  />
   <div class="hero-overlay"></div>
   <div class="hero-copy">
     <h1>RenoFitness in YYC</h1>

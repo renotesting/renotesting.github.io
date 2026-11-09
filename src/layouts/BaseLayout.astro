@@ -1,15 +1,23 @@
 ---
+import { getImage } from 'astro:assets';
 import '../styles/global.css';
+import heroImage from '../assets/hero.PNG';
 
 const {
   title,
   description,
-  ogImage = '/favicon.jpg'
+  keywords,
+  noindex = false,
+  ogImage
 } = Astro.props;
 
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
 const gaId = import.meta.env.PUBLIC_GA_ID;
-const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url);
+const siteBase = Astro.site || Astro.url;
+const canonical = new URL(Astro.url.pathname, siteBase);
+const defaultOgImage = await getImage({ src: heroImage, width: 1200, format: 'jpg' });
+// Social networks need an absolute URL here.
+const ogImageUrl = new URL(ogImage || defaultOgImage.src, siteBase);
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -18,12 +26,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&display=swap" rel="stylesheet" />

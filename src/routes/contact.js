@@ -9,6 +9,8 @@ const router = express.Router();
 const { sendEmail, sendContactConfirmation } = require('../utils/emailService');
 const { appendToFile, findInFile } = require('../utils/storage');
 const { escapeHtml, stripHeaderBreaks } = require('../utils/sanitize');
+const { verifyAuth, requireAdmin } = require('../middleware/auth');
+const { contactLimiter } = require('../middleware/rateLimit');
 
 const CONTACTS_FILE = 'contact-submissions.json';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -19,10 +21,16 @@ const LIMITS = {
   subject: 200,
   message: 5000
 };
+const FIND_US_LABELS = {
+  friends: 'Friends',
+  search: 'Search engine',
+  ad: 'Advertisement',
+  other: 'Other'
+};
 
-router.post('/', async (req, res) => {
+router.post('/', contactLimiter, async (req, res) => {
   try {
-    const { name, email, phone, subject, message } = req.body;
+    const { name, email, phone, subject, message, findUs } = req.body;
 
     if (!name || !email || !subject || !message) {
       return res.status(400).json({
@@ -48,12 +56,17 @@ router.post('/', async (req, res) => {
     const safePhone = phone ? stripHeaderBreaks(phone).slice(0, LIMITS.phone) : '';
     const safeSubject = stripHeaderBreaks(subject).slice(0, LIMITS.subject);
     const safeMessage = String(message).slice(0, LIMITS.message);
+    // Optional and low stakes, so an unexpected value is recorded as unknown rather than rejected.
+    const findUsLabel = Object.prototype.hasOwnProperty.call(FIND_US_LABELS, findUs)
+      ? FIND_US_LABELS[findUs]
+      : 'Not provided';
 
     const submission = {
       id: Date.now().toString(),
       name: safeName,
       email: safeEmail,
       phone: safePhone || 'Not provided',
+      findUs: findUsLabel,
       subject: safeSubject,
       message: safeMessage,
       submittedAt: new Date().toISOString(),
@@ -97,6 +110,10 @@ router.post('/', async (req, res) => {
                   <div>${escapeHtml(submission.phone)}</div>
                 </div>
                 <div class="field">
+                  <div class="label">How they found us:</div>
+                  <div>${escapeHtml(submission.findUs)}</div>
+                </div>
+                <div class="field">
                   <div class="label">Subject:</div>
                   <div>${escapeHtml(safeSubject)}</div>
                 </div>
@@ -132,7 +149,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', verifyAuth, requireAdmin, (req, res) => {
   try {
     const submission = findInFile(CONTACTS_FILE, (c) => c.id === req.params.id);
 

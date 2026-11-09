@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import logo from '../assets/logo-renofitness.jpg';
 import AuthStatus from './AuthStatus.jsx';
 import NavToggle from './NavToggle.jsx';
@@ -7,7 +8,7 @@ import NavToggle from './NavToggle.jsx';
 <header class="site-header">
   <div class="nav-inner">
     <a class="logo-link" href="/">
-      <img src={logo.src} alt="" width="48" height="48" />
+      <Image src={logo} height={96} alt="" loading="eager" />
       <span>RenoFitness</span>
     </a>
     <nav aria-label="Primary">

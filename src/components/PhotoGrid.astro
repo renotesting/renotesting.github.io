@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import photo1 from '../assets/1.jpg';
 import photo2 from '../assets/2.JPG';
 import photo3 from '../assets/3.JPG';
@@ -25,7 +26,13 @@ const photos = [
   <div class="photo-grid">
     {photos.map((photo) => (
       <figure>
-        <img src={photo.src.src} alt={photo.alt} width="400" height="280" loading="lazy" />
+        <Image
+          src={photo.src}
+          widths={[400, 800]}
+          sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 25vw"
+          alt={photo.alt}
+          loading="lazy"
+        />
       </figure>
     ))}
   </div>
