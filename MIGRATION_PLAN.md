@@ -57,7 +57,7 @@ renotesting.github.io/
 │   ├── img/
 │   ├── resources/
 │   ├── vendors/
-���   ├── carousel1/
+│   ├── carousel1/
 │   ├── carousel2/
 │   └── widgets/
 │

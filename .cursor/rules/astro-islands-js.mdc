@@ -1,0 +1,30 @@
+---
+description: Astro islands and client-side JS conventions for interactive forms (login, register, contact, newsletter)
+globs: src/components/**/*.{js,ts},src/scripts/**/*.{js,ts}
+alwaysApply: false
+---
+
+# Astro Islands & Client-Side JS — RenoFitness
+
+## When to use an island
+- Only these pieces need client-side interactivity/hydration: `LoginForm`, `RegisterForm`, `ContactForm`, `NewsletterForm`, and the mobile nav toggle. Everything else on the site should remain fully static with no hydration directive.
+- Default to the lightest hydration directive that works: use `client:visible` for below-the-fold forms (e.g. a newsletter signup in the footer) and `client:load` only for above-the-fold, immediately-needed interactivity (e.g. the login form on `/login`). Don't reach for `client:load` everywhere out of habit — it defeats Astro's zero-JS-by-default benefit.
+- Don't hydrate an entire page as one big island; scope hydration to the smallest component that actually needs it (the `<form>` itself, not the whole page layout around it).
+
+## Form submission pattern
+- All form islands follow the same shape: prevent default submit → client-side validate required fields → `fetch()` the corresponding Express endpoint → handle success/error response → update UI state (loading, success message, error message) without a full page reload.
+- Match the request/response shapes already documented in the project README exactly — e.g. `POST /api/auth/register` expects `{ name, email, password, confirmPassword }` and returns `{ success, message, user, token }` on success. Don't invent a different payload shape on the frontend.
+- On successful login/register, store the returned JWT in `localStorage` (matching the existing documented approach) and redirect as appropriate (e.g. to a logged-in view or back to the homepage).
+- Surface backend validation errors (400 responses) directly to the user near the relevant field rather than a generic "something went wrong" — the Express API already returns a `message` field for this.
+
+## Client-side validation
+- Client-side validation (required fields, email format, password confirmation match) is a UX nicety only — it must mirror, not replace, the server-side validation already implemented in the Express routes. Never assume client-side checks are sufficient on their own.
+- Keep validation logic in small, reusable functions (e.g. `isValidEmail()`, `passwordsMatch()`) shared across `LoginForm`/`RegisterForm` rather than duplicated inline in each island.
+
+## State and error handling
+- Each form island manages its own local state (loading/submitting, success, error) — don't reach for a global state library for a handful of independent forms; that's unnecessary complexity for this project's scope.
+- Wrap every `fetch()` call in try/catch and handle network failures (server down, CORS issue) distinctly from a normal 4xx/5xx API response — show the user a clear "couldn't reach the server" message rather than letting an unhandled rejection fail silently.
+- Never log the JWT, password, or password confirmation values to the browser console, even during development debugging.
+
+## Token-gated islands (admin views)
+- If an admin-only view (e.g. viewing newsletter subscribers) is added to the frontend later, gate it by checking for a valid stored JWT before rendering, and always re-verify server-side via `/api/auth/verify-token` — never trust client-side presence of a token alone as proof of a valid session.

@@ -1,15 +1,45 @@
 {
-  "name": "matew",
-  "version": "1.0.0",
-  "description": "",
-  "main": "slider.jquery.js",
-  "dependencies": {
-    "jquery": "^3.1.1"
-  },
-  "devDependencies": {},
+  "name": "renofitness-nodejs",
+  "version": "2.0.0",
+  "description": "RenoFitness website — Astro frontend with Express API",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "dev:web": "astro dev",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:web\"",
+    "build": "astro build",
+    "preview": "astro preview",
+    "make-admin": "node scripts/make-admin.js"
   },
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "fitness",
+    "kickboxing",
+    "muay-thai",
+    "personal-training",
+    "calgary"
+  ],
+  "author": "Reno Studio",
+  "license": "ISC",
+  "dependencies": {
+    "@astrojs/preact": "^6.1.2",
+    "astro": "^7.4.7",
+    "bcryptjs": "^2.4.3",
+    "cookie": "^2.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.22.3",
+    "express-rate-limit": "^8.7.3",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^10.4.0",
+    "preact": "^10.26.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7",
+    "nodemon": "3.1.11"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  }
 }
