@@ -1,5 +1,6 @@
 ---
 import NewsletterForm from './NewsletterForm.jsx';
+import { whatsappUrl } from '../scripts/whatsapp.js';
 ---
 
 <footer class="site-footer">
@@ -11,7 +12,9 @@ import NewsletterForm from './NewsletterForm.jsx';
         <li><a href="https://www.facebook.com/renofitness/" aria-label="Facebook">f</a></li>
         <li><a href="https://twitter.com/llgg716?lang=en" aria-label="X">x</a></li>
         <li><a href="https://www.instagram.com/renostudios/" aria-label="Instagram">ig</a></li>
-        <li><a href="https://m.me/renofitness" aria-label="Message us on Messenger">m</a></li>
+        {whatsappUrl && (
+          <li><a href={whatsappUrl} target="_blank" rel="noopener" aria-label="Chat on WhatsApp">wa</a></li>
+        )}
       </ul>
     </div>
     <div>

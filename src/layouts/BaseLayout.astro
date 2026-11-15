@@ -2,6 +2,7 @@
 import { getImage } from 'astro:assets';
 import '../styles/global.css';
 import heroImage from '../assets/hero.PNG';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
 
 const {
   title,
@@ -71,5 +72,6 @@ const ogImageUrl = new URL(ogImage || defaultOgImage.src, siteBase);
       <slot />
     </main>
     <slot name="footer" />
+    <WhatsAppButton />
   </body>
 </html>

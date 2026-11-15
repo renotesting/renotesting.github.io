@@ -1,0 +1,5 @@
+{
+  "watch": ["server.js", "src/routes", "src/middleware", "src/utils", ".env"],
+  "ext": "js,json",
+  "ignore": ["dist/", "data/", ".astro/", "node_modules/"]
+}

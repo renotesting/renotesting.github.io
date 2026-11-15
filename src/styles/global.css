@@ -514,3 +514,59 @@ textarea:focus-visible {
   color: #fff;
   text-decoration: none;
 }
+
+.whatsapp-button {
+  position: fixed;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  /* White text on this green is 5.07:1, above the 4.5:1 contrast minimum */
+  background: #0f7f44;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+}
+
+.whatsapp-button:hover {
+  background: #0b6e3a;
+}
+
+.whatsapp-button svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+/* On phones, show only the icon so the button doesn't cover page content */
+@media (max-width: 600px) {
+  .whatsapp-button {
+    min-width: 48px;
+    justify-content: center;
+    padding: 0.75rem;
+  }
+
+  .whatsapp-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media print {
+  .whatsapp-button {
+    display: none;
+  }
+}

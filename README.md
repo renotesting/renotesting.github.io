@@ -148,6 +148,7 @@ Set `JWT_SECRET` (required, no default), `CORS_ORIGINS`, and optional email cred
 | `CORS_ORIGINS` | Comma-separated allowed origins | `http://localhost:4321,http://localhost:3000` |
 | `TRUST_PROXY` | Number of proxies in front of the app, used to find visitor IPs for rate limits | `0` locally, usually `1` when hosted |
 | `PUBLIC_API_URL` | API base for the frontend; empty = same origin | `http://localhost:3000` |
+| `PUBLIC_WHATSAPP_NUMBER` | WhatsApp number with country code, digits only, read at build time. Empty hides the chat button | `1403xxxxxxx` |
 | `PUBLIC_GTM_ID` | Optional Google Tag Manager id | `GTM-XXXX` |
 | `PUBLIC_GA_ID` | Optional Google Analytics id | `G-XXXX` |
 

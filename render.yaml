@@ -45,6 +45,9 @@ services:
       # Read at build time. Same container the old site used.
       - key: PUBLIC_GTM_ID
         value: GTM-MWQ2259
+      # Read at build time. Digits with country code; empty hides the chat button.
+      - key: PUBLIC_WHATSAPP_NUMBER
+        sync: false
       # Secrets: set these in the Render dashboard.
       - key: EMAIL_USER
         sync: false

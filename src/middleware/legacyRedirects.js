@@ -12,12 +12,8 @@ const PERMANENT_REDIRECTS = {
   '/login.html': '/login/',
   '/register.html': '/register/',
   '/subscribe.html': '/subscribe/',
-  '/generator.html': '/generator/'
-};
-
-// Temporary on purpose: these can point at real booking pages once the
-// Mindbody widgets are repaired, and browsers cache permanent redirects.
-const TEMPORARY_REDIRECTS = {
+  '/generator.html': '/generator/',
+  // The Mindbody booking widgets these pages embedded were discontinued.
   '/widgets/class.html': '/contact/',
   '/widgets/appointment.html': '/contact/'
 };
@@ -33,6 +29,5 @@ function addRedirects(redirects, status) {
 }
 
 addRedirects(PERMANENT_REDIRECTS, 301);
-addRedirects(TEMPORARY_REDIRECTS, 302);
 
 module.exports = router;

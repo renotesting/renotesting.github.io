@@ -38,7 +38,7 @@ Website for a Calgary kickboxing / Muay Thai studio. Migrated from a static GitH
 - Admin only (JWT + `role: 'admin'`): `GET /api/email/subscribers`, `POST /api/email/send-newsletter`, `GET /api/contact/:submissionId`
 
 ## Environment variables
-Defined in `.env` (template: `.env.example`): `NODE_ENV`, `PORT`, `SITE_URL`, `JWT_SECRET`, `JWT_EXPIRATION`, `EMAIL_PROVIDER`, `EMAIL_USER`, `EMAIL_PASSWORD`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `ADMIN_EMAIL`, `EMAIL_FROM_NAME`, `DATA_DIR`, `BCRYPT_ROUNDS`, `CORS_ORIGINS`, `TRUST_PROXY`, `PUBLIC_API_URL`, `PUBLIC_GTM_ID`, `PUBLIC_GA_ID`. Never hardcode or log these. Add new ones to `.env.example` and the README table.
+Defined in `.env` (template: `.env.example`): `NODE_ENV`, `PORT`, `SITE_URL`, `JWT_SECRET`, `JWT_EXPIRATION`, `EMAIL_PROVIDER`, `EMAIL_USER`, `EMAIL_PASSWORD`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `ADMIN_EMAIL`, `EMAIL_FROM_NAME`, `DATA_DIR`, `BCRYPT_ROUNDS`, `CORS_ORIGINS`, `TRUST_PROXY`, `PUBLIC_API_URL`, `PUBLIC_WHATSAPP_NUMBER`, `PUBLIC_GTM_ID`, `PUBLIC_GA_ID`. Never hardcode or log these. Add new ones to `.env.example` and the README table.
 
 ## Conventions
 Detailed rules live in `.claude/rules/` (security and general JS always load; Express, JWT and Astro rules load when matching files are touched). Key points:
