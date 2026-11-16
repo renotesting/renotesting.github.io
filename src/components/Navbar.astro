@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '../assets/logo-renofitness.jpg';
-import AuthStatus from './AuthStatus.jsx';
 import NavToggle from './NavToggle.jsx';
 ---
 
@@ -21,7 +20,7 @@ import NavToggle from './NavToggle.jsx';
       </ul>
     </nav>
     <div class="nav-actions">
-      <AuthStatus client:load />
+      <a class="btn btn-primary" href="/subscribe">Newsletter</a>
     </div>
     <NavToggle client:load />
   </div>

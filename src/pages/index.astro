@@ -7,7 +7,7 @@ import About from '../components/About.astro';
 import PhotoGrid from '../components/PhotoGrid.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Services from '../components/Services.astro';
-import ContactForm from '../components/ContactForm.jsx';
+import ContactSection from '../components/ContactSection.astro';
 ---
 
 <BaseLayout
@@ -24,7 +24,7 @@ import ContactForm from '../components/ContactForm.jsx';
   <section class="section" id="contact">
     <h2>We're happy to hear from you</h2>
     <div class="auth-card" style="margin: 2rem auto 0;">
-      <ContactForm client:visible />
+      <ContactSection hydrate="visible" />
     </div>
   </section>
   <Footer slot="footer" />

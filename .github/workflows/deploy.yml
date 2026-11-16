@@ -1,0 +1,51 @@
+# Builds the Astro site and publishes it to GitHub Pages.
+# Needs Settings → Pages → Source set to "GitHub Actions".
+# PUBLIC_* values come from Settings → Secrets and variables → Actions → Variables.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; don't cancel one that's already publishing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          PUBLIC_FORMSPREE_FORM_ID: ${{ vars.PUBLIC_FORMSPREE_FORM_ID }}
+          PUBLIC_NEWSLETTER_FORM_URL: ${{ vars.PUBLIC_NEWSLETTER_FORM_URL }}
+          PUBLIC_WHATSAPP_NUMBER: ${{ vars.PUBLIC_WHATSAPP_NUMBER }}
+          PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}
+          PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,23 +1,7 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 
 export default function NavToggle() {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('user');
-      setUser(raw ? JSON.parse(raw) : null);
-    } catch {
-      setUser(null);
-    }
-  }, []);
-
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/';
-  }
 
   return (
     <>
@@ -43,14 +27,7 @@ export default function NavToggle() {
         <a href="/#services">Services</a>
         <a href="/blog">Blog</a>
         <a href="/contact">Contact</a>
-        {user && user.name ? (
-          <button type="button" onClick={logout}>Log out ({user.name})</button>
-        ) : (
-          <>
-            <a href="/login">Log in</a>
-            <a href="/register">Register</a>
-          </>
-        )}
+        <a href="/subscribe">Newsletter</a>
       </div>
     </>
   );

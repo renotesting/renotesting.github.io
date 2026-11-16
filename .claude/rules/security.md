@@ -1,20 +1,18 @@
 # Security Conventions — RenoFitness
 
 ## Secrets and environment
-- Never hardcode secrets (`JWT_SECRET`, `EMAIL_PASSWORD`, SMTP credentials, admin email); read from `process.env` via `dotenv`.
+- This is a static site: every `PUBLIC_*` value is baked into the public HTML/JS. Never put a password, API key or other secret in `.env` or in a GitHub repository variable used by the build.
 - Never commit `.env`; only `.env.example` with placeholders.
-- New env var → add to `.env.example` and the README configuration table in the same change.
-- Don't log env var values.
+- New env var → add to `.env.example`, the README configuration table and `.github/workflows/deploy.yml` in the same change.
 
-## Helmet and CORS
-- Keep `helmet()` mounted globally in `server.js` before routes; scope any exception narrowly per route.
-- CORS origins come from an env var (e.g. `CORS_ORIGINS`), never `origin: '*'` — especially with JWT in localStorage.
-- Don't widen CORS to debug locally and forget to narrow it.
+## Third-party services
+- Form submissions go only to the configured Formspree endpoint and the newsletter form URL; don't send visitor data anywhere else.
+- Only accept `https://` URLs for anything embedded or posted to (see `src/scripts/newsletter.js`).
+- Keep spam protection on: the `_gotcha` honeypot in the contact form, plus Formspree's and the email service's own filters.
 
 ## Input handling
-- Validate and sanitize all user input (registration, contact, newsletter) before persisting or emailing.
-- Treat contact `subject`/`message` as untrusted when interpolated into emails (header/HTML injection).
-- Enforce length limits on free-text fields.
+- Validate input on the client for UX, and keep length limits on free-text fields (`maxlength`).
+- Contact submissions reach the studio's inbox through Formspree; treat their content as untrusted.
 
-## Dependencies
-- When bumping `helmet`, `bcryptjs` or `jsonwebtoken`, check for breaking changes in header defaults and JWT verification behavior.
+## Deployment
+- The Pages workflow keeps minimal permissions (`contents: read`, `pages: write`, `id-token: write`). Don't widen them.

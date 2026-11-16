@@ -1,0 +1,20 @@
+---
+// Shows the contact form when Formspree is configured, otherwise the other ways to get in touch.
+import ContactForm from './ContactForm.jsx';
+import { formspreeEndpoint } from '../scripts/formspree.js';
+import { whatsappUrl } from '../scripts/whatsapp.js';
+
+const { hydrate = 'load' } = Astro.props;
+---
+
+{formspreeEndpoint ? (
+  hydrate === 'visible' ? <ContactForm client:visible /> : <ContactForm client:load />
+) : (
+  <p class="form-message">
+    The contact form is not set up yet. Reach me on
+    <a href="https://www.facebook.com/renofitness/">Facebook</a>
+    or <a href="https://www.instagram.com/renostudios/">Instagram</a>{whatsappUrl && (
+      <Fragment>, or <a href={whatsappUrl} target="_blank" rel="noopener">WhatsApp</a></Fragment>
+    )}.
+  </p>
+)}

@@ -570,3 +570,19 @@ textarea:focus-visible {
     display: none;
   }
 }
+
+/* Kept off-screen rather than display:none, which some bots skip. */
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.newsletter-frame {
+  display: block;
+  width: 100%;
+  min-height: 34rem;
+  border: 0;
+}

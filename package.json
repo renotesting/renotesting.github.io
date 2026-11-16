@@ -1,16 +1,11 @@
 {
-  "name": "renofitness-nodejs",
-  "version": "2.0.0",
-  "description": "RenoFitness website — Astro frontend with Express API",
-  "main": "server.js",
+  "name": "renofitness",
+  "version": "3.0.0",
+  "description": "RenoFitness website — static Astro site hosted on GitHub Pages",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "dev:web": "astro dev",
-    "dev:all": "concurrently \"npm run dev\" \"npm run dev:web\"",
+    "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "make-admin": "node scripts/make-admin.js"
+    "preview": "astro preview"
   },
   "keywords": [
     "fitness",
@@ -22,22 +17,9 @@
   "author": "Reno Studio",
   "license": "ISC",
   "dependencies": {
-    "@astrojs/preact": "^6.1.2",
-    "astro": "^7.4.7",
-    "bcryptjs": "^2.4.3",
-    "cookie": "^2.0.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "express": "^4.22.3",
-    "express-rate-limit": "^8.7.3",
-    "helmet": "^7.0.0",
-    "jsonwebtoken": "^9.0.3",
-    "nodemailer": "^10.4.0",
+    "@astrojs/preact": "^6.1.6",
+    "astro": "^7.4.12",
     "preact": "^10.26.0"
-  },
-  "devDependencies": {
-    "concurrently": "^10.0.7",
-    "nodemon": "3.1.11"
   },
   "engines": {
     "node": ">=22.23.4"

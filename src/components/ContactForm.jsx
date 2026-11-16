@@ -1,6 +1,13 @@
 import { useState } from 'preact/hooks';
-import { postJson, NETWORK_ERROR_MESSAGE } from '../scripts/api.js';
+import { submitToFormspree } from '../scripts/formspree.js';
 import { isValidEmail, isNonEmpty } from '../scripts/validation.js';
+
+const FIND_US_LABELS = {
+  friends: 'Friends',
+  search: 'Search engine',
+  ad: 'Advertisement',
+  other: 'Other'
+};
 
 export default function ContactForm() {
   const [name, setName] = useState('');
@@ -8,6 +15,7 @@ export default function ContactForm() {
   const [phone, setPhone] = useState('');
   const [findUs, setFindUs] = useState('friends');
   const [message, setMessage] = useState('');
+  const [gotcha, setGotcha] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -25,28 +33,26 @@ export default function ContactForm() {
     if (Object.keys(nextErrors).length) return;
 
     setLoading(true);
-    try {
-      const { ok, data } = await postJson('/api/contact', {
-        name: name.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        subject: 'Website inquiry',
-        findUs,
-        message: message.trim()
-      });
-      if (ok) {
-        setSuccess(data.message || 'Thank you for contacting us!');
-        setName('');
-        setEmail('');
-        setPhone('');
-        setMessage('');
-      } else {
-        setError(data.message || 'Could not send your message.');
-      }
-    } catch {
-      setError(NETWORK_ERROR_MESSAGE);
-    } finally {
-      setLoading(false);
+    const result = await submitToFormspree({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      'found us through': FIND_US_LABELS[findUs] || findUs,
+      message: message.trim(),
+      _subject: `Website inquiry from ${name.trim()}`,
+      // Honeypot: Formspree drops submissions where a bot filled this hidden field.
+      _gotcha: gotcha
+    });
+    setLoading(false);
+
+    if (result.ok) {
+      setSuccess('Thank you for contacting us! I will get back to you soon.');
+      setName('');
+      setEmail('');
+      setPhone('');
+      setMessage('');
+    } else {
+      setError(result.message);
     }
   }
 
@@ -56,25 +62,24 @@ export default function ContactForm() {
       {success && <p class="form-message success" role="status">{success}</p>}
       <label>
         Name
-        <input type="text" name="name" value={name} onInput={(e) => setName(e.target.value)} autocomplete="name" />
+        <input type="text" name="name" value={name} onInput={(e) => setName(e.target.value)} autocomplete="name" maxlength="100" />
         {fieldErrors.name && <span class="field-error">{fieldErrors.name}</span>}
       </label>
       <label>
         Email
-        <input type="email" name="email" value={email} onInput={(e) => setEmail(e.target.value)} autocomplete="email" />
+        <input type="email" name="email" value={email} onInput={(e) => setEmail(e.target.value)} autocomplete="email" maxlength="254" />
         {fieldErrors.email && <span class="field-error">{fieldErrors.email}</span>}
       </label>
       <label>
         Phone (optional)
-        <input type="tel" name="phone" value={phone} onInput={(e) => setPhone(e.target.value)} autocomplete="tel" />
+        <input type="tel" name="phone" value={phone} onInput={(e) => setPhone(e.target.value)} autocomplete="tel" maxlength="30" />
       </label>
       <label>
         How did you find us?
         <select name="find-us" value={findUs} onChange={(e) => setFindUs(e.target.value)}>
-          <option value="friends">Friends</option>
-          <option value="search">Search engine</option>
-          <option value="ad">Advertisement</option>
-          <option value="other">Other</option>
+          {Object.entries(FIND_US_LABELS).map(([value, label]) => (
+            <option value={value}>{label}</option>
+          ))}
         </select>
       </label>
       <label>
@@ -82,6 +87,16 @@ export default function ContactForm() {
         <textarea name="message" value={message} onInput={(e) => setMessage(e.target.value)} maxlength="5000"></textarea>
         {fieldErrors.message && <span class="field-error">{fieldErrors.message}</span>}
       </label>
+      <input
+        class="honeypot"
+        type="text"
+        name="_gotcha"
+        value={gotcha}
+        onInput={(e) => setGotcha(e.target.value)}
+        tabindex="-1"
+        autocomplete="off"
+        aria-hidden="true"
+      />
       <button class="btn btn-primary" type="submit" disabled={loading}>
         {loading ? 'Sending…' : 'Send message'}
       </button>
