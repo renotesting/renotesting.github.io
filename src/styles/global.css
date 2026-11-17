@@ -586,3 +586,22 @@ textarea:focus-visible {
   min-height: 34rem;
   border: 0;
 }
+
+/* Google's checkbox is a fixed 304px wide; scale it down on very narrow phones. */
+.captcha {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 78px;
+}
+
+.captcha-note {
+  color: var(--color-muted, inherit);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 340px) {
+  .captcha > div:first-child {
+    transform: scale(0.88);
+    transform-origin: 0 0;
+  }
+}

@@ -40,8 +40,13 @@ export async function submitToFormspree(fields) {
   } catch {
     data = {};
   }
+  // Form-level problems (such as reCAPTCHA left on for an AJAX form) come back as a single
+  // `error` string instead of an `errors` list.
   const message = Array.isArray(data.errors) && data.errors.length
     ? data.errors.map((error) => error.message).join(' ')
-    : 'Could not send your message. Please try again later.';
-  return { ok: false, message };
+    : typeof data.error === 'string' && data.error
+      ? data.error
+      : 'Could not send your message. Please try again later.';
+  const code = Array.isArray(data.errors) ? data.errors.find((error) => error.code)?.code || '' : '';
+  return { ok: false, message, code };
 }

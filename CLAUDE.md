@@ -25,7 +25,7 @@ An Express API with login, register and admin tools existed until commit `bc13b1
 - `.env` — local only, never commit
 
 ## Environment variables
-All are read at build time and end up in the public site, so none may hold a secret. Template: `.env.example`. For the live site they're GitHub repository variables passed in by the workflow: `PUBLIC_FORMSPREE_FORM_ID`, `PUBLIC_NEWSLETTER_FORM_URL`, `PUBLIC_WHATSAPP_NUMBER`, `PUBLIC_GTM_ID`, `PUBLIC_GA_ID`. A new one goes in `.env.example`, the README table and the workflow.
+All are read at build time and end up in the public site, so none may hold a secret. Template: `.env.example`. For the live site they're GitHub repository variables passed in by the workflow: `PUBLIC_FORMSPREE_FORM_ID`, `PUBLIC_RECAPTCHA_SITE_KEY`, `PUBLIC_NEWSLETTER_FORM_URL`, `PUBLIC_WHATSAPP_NUMBER`, `PUBLIC_GTM_ID`, `PUBLIC_GA_ID`. A new one goes in `.env.example`, the README table and the workflow.
 
 ## Conventions
 Detailed rules live in `.claude/rules/` (security and general JS always load; Astro rules load when matching files are touched). Key points:

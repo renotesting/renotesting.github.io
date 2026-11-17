@@ -39,6 +39,7 @@ Everything here is visible to visitors in the built site, so never put a passwor
 | Variable | What it does | Example |
 |----------|--------------|---------|
 | `PUBLIC_FORMSPREE_FORM_ID` | Formspree form ID, the part after `/f/` in the form endpoint. Empty shows social links instead of the contact form | `xyzabcd` |
+| `PUBLIC_RECAPTCHA_SITE_KEY` | Google reCAPTCHA v2 checkbox **site** key, shown on the contact form. The secret key goes only in Formspree. Leave empty if reCAPTCHA is off for the form | `6Lc...` |
 | `PUBLIC_NEWSLETTER_FORM_URL` | Brevo hosted signup form link, `https://` only. Empty shows "signup opens soon" | `https://xxxx.sibforms.com/serve/...` |
 | `PUBLIC_WHATSAPP_NUMBER` | WhatsApp number with country code, digits only. Empty hides the chat button | `1403xxxxxxx` |
 | `PUBLIC_GTM_ID` | Optional Google Tag Manager ID | `GTM-XXXX` |
@@ -51,6 +52,14 @@ Everything here is visible to visitors in the built site, so never put a passwor
 3. Under the form's settings, restrict it to the `www.renofitness.ca` domain so other sites can't use it.
 
 The free plan has a monthly submission limit; check Formspree's current plans.
+
+#### reCAPTCHA on the contact form
+
+With reCAPTCHA on, Formspree rejects messages sent from the page's script unless the form uses your own reCAPTCHA key (available on the free plan):
+
+1. At https://www.google.com/recaptcha/admin, create a key of type **reCAPTCHA v2 → "I'm not a robot" Checkbox**. Add the domains `www.renofitness.ca`, `renofitness.ca` and, for local testing, `localhost`.
+2. In Formspree, open the form's **Settings**, keep CAPTCHA on, choose **Adjust settings → Custom reCAPTCHA** and paste the **secret key**.
+3. Put the **site key** in `PUBLIC_RECAPTCHA_SITE_KEY`. Only the site key is public; never put the secret key in `.env` or a GitHub variable.
 
 ### Setting up the Brevo newsletter
 
