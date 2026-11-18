@@ -4,5 +4,5 @@ const number = String(import.meta.env.PUBLIC_WHATSAPP_NUMBER || '').replace(/\D/
 const GREETING = 'Hi Reno, I found you on renofitness.ca and have a question.';
 
 export const whatsappUrl = number
-  ? `https://wa.me/${number}?text=${encodeURIComponent(GREETING)}`
+  ? `https://wa.me/${4036198626}?text=${encodeURIComponent(GREETING)}`
   : null;

@@ -605,3 +605,33 @@ textarea:focus-visible {
     transform-origin: 0 0;
   }
 }
+
+.card-meta {
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.section-cta {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* A lone testimonial reads better at a comfortable line length than stretched across the page. */
+.testimonial-grid.single {
+  grid-template-columns: minmax(0, 42rem);
+  justify-content: center;
+}
+
+.quote-translation {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.quote-note {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
