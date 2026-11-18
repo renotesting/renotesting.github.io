@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import clientPhoto from '../assets/ClientMingAi.jpeg';
+---
+
+<section class="section" id="testimonials">
+  <h2>What clients say</h2>
+  <p class="lead">Feedback from people who train with Reno.</p>
+  {/* One client's review: the original Chinese, with an English translation below it. */}
+  <div class="testimonial-grid single">
+    <blockquote class="quote">
+      <p lang="zh-Hans">我非常喜欢Reno的私教服务：他非常专业。对任何训练动作的要求很高，每次的训练可以达到最好的训练效果，并且安全。他是我目前最关心学员的私教老师。</p>
+      <p class="quote-translation">
+        “I really enjoy training with Reno. He is very professional and holds every movement to a
+        high standard, so each session is as effective as it can be, and always safe. Of all the
+        trainers I have worked with, he cares the most about his clients.”
+        <span class="quote-note">Translated from Chinese</span>
+      </p>
+      <footer>
+        <Image src={clientPhoto} width={96} height={96} fit="cover" alt="" loading="lazy" />
+        <cite>Ming A., Calgary</cite>
+      </footer>
+    </blockquote>
+  </div>
+</section>

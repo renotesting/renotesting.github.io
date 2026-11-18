@@ -1,0 +1,13 @@
+---
+import { whatsappUrl } from '../scripts/whatsapp.js';
+---
+
+{whatsappUrl && (
+  <a class="whatsapp-button" href={whatsappUrl} target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 19.5l1.2-3.6A8 8 0 1 1 8.4 19z" />
+      <path d="M9 9.5c.3 1.8 1.7 3.7 3.8 4.6l1.2-1.1 1.8.9-.4 1.6c-3.4.2-7-3.4-6.8-6.8l1.6-.4.9 1.8z" />
+    </svg>
+    <span>Chat on WhatsApp</span>
+  </a>
+)}

@@ -1,0 +1,30 @@
+---
+description: JWT authentication and password-hashing conventions for RenoFitness auth flow
+globs: src/routes/auth.js,src/middleware/*.js,src/utils/tokenService.js
+alwaysApply: false
+---
+
+# JWT Authentication — RenoFitness
+
+## Password handling
+- Passwords are always hashed with `bcryptjs` before being stored in `data/users.json`; never store or log plaintext passwords.
+- Use the hash round count from `BCRYPT_ROUNDS` (env var) rather than a hardcoded number, so it stays configurable without a code change.
+- Registration must confirm `password === confirmPassword` server-side even though the frontend also validates this — never trust client-side validation alone.
+
+## Token issuance
+- All JWTs are signed with `JWT_SECRET` from the environment — never hardcode a secret or fall back to a default value in code.
+- Respect `JWT_EXPIRATION` from the environment when signing tokens; don't hardcode an expiry inline in `tokenService.js`.
+- Token payload should carry only what's needed to identify the user (id, email, name) — never embed the password hash or other sensitive fields in the JWT payload, since JWT payloads are base64-encoded, not encrypted.
+
+## Verification middleware
+- The auth middleware in `src/middleware/auth.js` expects `Authorization: Bearer <token>` — reject requests missing this header with `401`, not `500`.
+- Distinguish between "no token provided" (`401`, generic "authentication required") and "invalid/expired token" (`401`, generic "invalid or expired token") — but never leak *why* a token is invalid (e.g. don't reveal whether the user exists) in the response body.
+- Attach the decoded user payload to `req.user` (or equivalent) after verification, so downstream route handlers don't need to re-decode the token.
+
+## Admin-gated routes
+- Endpoints like `GET /api/email/subscribers` and `POST /api/email/send-newsletter` require a valid JWT — verify the token via the shared middleware rather than re-implementing verification inline in the route file.
+- If/when role-based access is introduced (e.g. distinguishing admin vs regular users), encode that as an explicit check in the middleware, not as a hardcoded email/id comparison scattered across routes.
+
+## General
+- Never log full JWTs or the `JWT_SECRET` value, even at debug level.
+- Keep token verification and token generation logic in `tokenService.js` — routes and middleware should call into it, not reimplement `jsonwebtoken` calls directly.

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { newsletterFormUrl } from '../scripts/newsletter.js';
+---
+
+<BaseLayout
+  title="Subscribe | RenoFitness Newsletter"
+  description="Subscribe to the RenoFitness newsletter for training tips and class updates."
+  noindex={!newsletterFormUrl}
+>
+  <Navbar slot="header" />
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Newsletter</h1>
+      <p>Training notes and studio updates, no spam. Every email has an unsubscribe link.</p>
+      {newsletterFormUrl ? (
+        <Fragment>
+          <iframe
+            class="newsletter-frame"
+            src={newsletterFormUrl}
+            title="Newsletter signup form"
+            loading="lazy"
+          ></iframe>
+          <p><a href={newsletterFormUrl} target="_blank" rel="noopener">Open the signup form in a new tab</a></p>
+        </Fragment>
+      ) : (
+        <p class="form-message">Newsletter signup opens soon. <a href="/contact">Get in touch</a> in the meantime.</p>
+      )}
+    </div>
+  </div>
+  <Footer slot="footer" />
+</BaseLayout>

@@ -1,15 +1,27 @@
 {
-  "name": "matew",
-  "version": "1.0.0",
-  "description": "",
-  "main": "slider.jquery.js",
-  "dependencies": {
-    "jquery": "^3.1.1"
-  },
-  "devDependencies": {},
+  "name": "renofitness",
+  "version": "3.0.0",
+  "description": "RenoFitness website — static Astro site hosted on GitHub Pages",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "fitness",
+    "kickboxing",
+    "muay-thai",
+    "personal-training",
+    "calgary"
+  ],
+  "author": "Reno Studio",
+  "license": "ISC",
+  "dependencies": {
+    "@astrojs/preact": "^6.1.6",
+    "astro": "^7.4.12",
+    "preact": "^10.26.0"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  }
 }

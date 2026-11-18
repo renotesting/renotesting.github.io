@@ -1,0 +1,34 @@
+---
+description: Express.js conventions for the RenoFitness Node.js backend (routes, middleware, server setup)
+globs: src/**/*.js,server.js
+alwaysApply: false
+---
+
+# Express / Node.js Conventions — RenoFitness
+
+## Project shape
+- Route handlers live in `src/routes/` (one file per resource: `auth.js`, `email.js`, `contact.js`).
+- Cross-cutting concerns live in `src/middleware/` (e.g. `auth.js` for JWT verification).
+- Shared logic lives in `src/utils/` (`tokenService.js`, `storage.js`, `emailService.js`).
+- Static frontend pages are served from `public/` — do not put server logic there.
+- Keep `server.js` as a thin entry point: mount middleware, mount routers, start listening. Business logic does not belong in `server.js`.
+
+## Route handler style
+- Every route handler is `async` and wraps logic in try/catch; never let a rejected promise fall through unhandled.
+- Return consistent JSON shapes: `{ success: boolean, message?: string, ...data }` on success, `{ success: false, message: string }` on error — this matches the existing API responses documented in the README.
+- Use the correct HTTP status per action: `201` for created resources (register, subscribe, contact submission), `200` for reads/logins, `401`/`403` for auth failures, `400` for validation errors, `500` only for unexpected server errors.
+- Validate request bodies before touching business logic (required fields, email format, password confirmation match) and return `400` with a clear message on failure — don't let missing fields propagate into `storage.js` or `emailService.js`.
+
+## Data layer (flat JSON files)
+- All reads/writes to `data/*.json` go through `src/utils/storage.js` — never call `fs` directly from a route handler.
+- Treat file writes as effectively synchronous per request: avoid concurrent read-modify-write races on the same JSON file (e.g. two simultaneous registrations). Guard with a simple in-process lock or queue if this becomes a real concern.
+- Never write raw passwords to any `data/*.json` file — only the bcrypt hash.
+- This is a known scaling limit, not a bug: flag clearly in comments if a change assumes JSON-file storage will be replaced by a real database later.
+
+## Middleware
+- New Express middleware follows the `(req, res, next)` signature and calls `next(err)` on failure rather than throwing.
+- Mount global middleware (`helmet`, `cors`, `body-parser`/`express.json()`) once in `server.js`, not per-route.
+
+## Error handling
+- Centralize unexpected errors through a single error-handling middleware at the end of the middleware chain; don't duplicate try/catch boilerplate for generic 500s in every route.
+- Log server-side errors with enough context (route, method) but never log secrets (JWT secret, email password, raw request bodies containing passwords).
