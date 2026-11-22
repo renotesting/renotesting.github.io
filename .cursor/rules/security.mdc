@@ -1,0 +1,26 @@
+---
+description: Security conventions (Helmet, CORS, secrets) for the RenoFitness Express app — always applied
+alwaysApply: true
+---
+
+# Security Conventions — RenoFitness
+
+## Environment variables and secrets
+- Never hardcode secrets (`JWT_SECRET`, `EMAIL_PASSWORD`, SMTP credentials, admin email) in source files — they must come from `process.env`, loaded via `dotenv`.
+- Never commit `.env` — only `.env.example` with placeholder values belongs in the repo.
+- When adding a new required environment variable, add a placeholder entry to `.env.example` and document it in the README's configuration table in the same change.
+- Don't log environment variable values, even in development-mode debug logs.
+
+## Helmet
+- Keep `helmet()` mounted globally in `server.js` before route definitions. If a specific route needs a relaxed CSP or header exception (e.g. serving an embedded widget), scope the exception narrowly with Helmet's per-route config rather than disabling Helmet globally.
+
+## CORS
+- CORS origins should come from an environment variable (e.g. `CORS_ORIGINS`) rather than a hardcoded `origin: '*'` — especially once auth endpoints are in play, permissive CORS combined with JWT-in-localStorage is a real risk.
+- Don't widen CORS to debug a local issue and forget to narrow it back before committing.
+
+## Input handling
+- Sanitize/validate all user-supplied input (registration, contact form, newsletter signup) before writing to JSON files or including in emails — treat contact-form `message` and `subject` fields as untrusted when they're interpolated into admin notification emails, to avoid header injection or HTML injection into outgoing mail.
+- Enforce reasonable length limits on free-text fields (contact message, subject) before persisting or emailing them.
+
+## Dependencies
+- This project pins security-relevant packages (`helmet`, `bcryptjs`, `jsonwebtoken`). When bumping versions, check for breaking changes in JWT verification behavior or Helmet's default header set before merging.

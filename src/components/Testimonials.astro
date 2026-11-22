@@ -1,0 +1,58 @@
+---
+// Reviews copied by hand from the RenoFitness Google Business Profile. To add one, copy a new
+// entry in `reviews`; update `rating` and `reviewCount` to match Google when they change.
+const googleProfileUrl = 'https://maps.app.goo.gl/UxBsWdY9RHWD88fw7';
+// The "Ask for reviews" link from the Google Business Profile (looks like https://g.page/r/.../review).
+// Leave empty to hide the "Leave a review" button.
+const googleWriteReviewUrl = 'https://g.page/r/CZB7WJHLLjrGEBM/review';
+const rating = '4.9';
+const reviewCount = 10;
+
+const reviews = [
+  {
+    name: 'Abhinav W.',
+    stars: 5,
+    text: 'Working with Reno has been an amazing experience! From day one, he has been incredibly supportive and knowledgeable, tailoring workouts specifically to my needs and goals. He pushes me to work harder while also making sure I’m working safely and effectively. What I appreciate most is how they keep the sessions fresh and exciting, ensuring that I stay motivated and enjoy the process. They’re not just focused on fitness but on helping me build a sustainable, healthy lifestyle. If you’re serious about improving your fitness, Reno is the trainer you need!'
+  },
+  {
+    name: 'Xiyue C.',
+    stars: 5,
+    text: 'I have been training with Reno for almost a year. He is the best trainer I ever have. Reno makes his class fun and engaging. Lots of laugh in his class! I learnt kickboxing technics in his class, which is also an excellent cardio workout. Reno takes students advice seriously and makes effort to help everyone achieve their fitness goal! Strongly recommend!'
+  },
+  {
+    name: 'Serge S.',
+    stars: 5,
+    text: 'Reno has a fancy equipment in his Gym, with the beautiful view. He is very enthusiastic and goal oriented. Recommend.'
+  }
+];
+---
+
+<section class="section" id="testimonials">
+  <h2>What clients say</h2>
+  <p class="lead review-summary">
+    <span class="stars" aria-hidden="true">★★★★★</span>
+    <strong>{rating} out of 5</strong> from {reviewCount} reviews on Google
+  </p>
+  <div class="testimonial-grid">
+    {reviews.map((review) => (
+      <blockquote class="quote">
+        <p class="stars" aria-label={`${review.stars} out of 5 stars`}>{'★'.repeat(review.stars)}</p>
+        <p>{review.text}</p>
+        <footer>
+          <cite>{review.name}</cite>
+          <span class="quote-note">Google review</span>
+        </footer>
+      </blockquote>
+    ))}
+  </div>
+  <p class="section-cta btn-row">
+    <a class="btn btn-ghost dark" href={googleProfileUrl} target="_blank" rel="noopener">Read all reviews on Google</a>
+    {googleWriteReviewUrl && (
+      <a class="btn btn-primary" href={googleWriteReviewUrl} target="_blank" rel="noopener">Leave a review</a>
+    )}
+  </p>
+  {/* Earlier testimonial (not on Google), kept here in case it's wanted again:
+  Ming A., Calgary — 我非常喜欢Reno的私教服务：他非常专业。对任何训练动作的要求很高，每次的训练可以达到最好的训练效果，并且安全。他是我目前最关心学员的私教老师。
+  “I really enjoy training with Reno. He is very professional and holds every movement to a high standard, so each session is as effective as it can be, and always safe. Of all the trainers I have worked with, he cares the most about his clients.” (photo: src/assets/ClientMingAi.jpeg)
+  */}
+</section>
