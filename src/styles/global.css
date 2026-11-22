@@ -616,11 +616,6 @@ textarea:focus-visible {
   text-align: center;
 }
 
-/* A lone testimonial reads better at a comfortable line length than stretched across the page. */
-.testimonial-grid.single {
-  grid-template-columns: minmax(0, 42rem);
-  justify-content: center;
-}
 
 .quote-translation {
   margin-top: 0.85rem;
@@ -634,4 +629,21 @@ textarea:focus-visible {
   color: var(--color-muted);
   font-size: 0.85rem;
   font-style: italic;
+}
+
+.stars {
+  color: #f4b400;
+  letter-spacing: 0.1em;
+}
+
+.review-summary strong {
+  color: var(--color-ink);
+}
+
+.section-cta.btn-row {
+  justify-content: center;
+}
+
+.quote footer .quote-note {
+  margin: 0 0 0 auto;
 }
